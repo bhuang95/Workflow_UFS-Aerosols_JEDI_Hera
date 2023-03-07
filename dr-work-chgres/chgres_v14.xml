@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<!DOCTYPE workflow
+[
+	<!--
+	PROGRAM
+		Main workflow manager for Global Forecast System
+
+	NOTES:
+		This workflow was automatically generated at 2023-01-27 18:29:13.198072
+	-->
+	<!ENTITY PSLOT "CHGRES_V14GDAS">
+	<!ENTITY HOMEgfs "/home/Bo.Huang/JEDI-2020/expRuns/exp_UFS-Aerosols/cycExp_ATMA_warm/">
+	<!ENTITY TOPRUNDIR "/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/">
+	<!ENTITY JOBS_DIR "&HOMEgfs;/jobs/rocoto">
+
+	<!-- Experiment and Rotation directory -->
+	<!ENTITY EXPDIR "&HOMEgfs;/dr-work-chgres/">
+	<!ENTITY ROTDIR "&TOPRUNDIR;/&PSLOT;/dr-data">
+	<!ENTITY GDASHPSSDIR "/BMC/fim/5year/MAPP_2018/bhuang/BackupGdas/v14/">
+	<!ENTITY CHGRESHPSSDIR "/BMC/fim/5year/MAPP_2018/bhuang/UFS-Aerosols-expRuns/GDASCHGRES-V14/">
+
+	<!ENTITY MAXTRIES "10">
+
+	<!-- Model configuration -->
+	<!ENTITY SDATE "201711010000">
+	<!ENTITY EDATE "201712311800">
+	<!ENTITY CASE_CNTL     "C192">
+	<!ENTITY CASE_ENKF     "C192">
+	<!ENTITY LEVS "128">
+	<!ENTITY NMEM_EFCSGRP "5">
+	<!ENTITY NMEMS "01-40">
+
+
+	<!-- Machine related entities -->
+	<!ENTITY PARTITION_HPSS    "service">
+	<!ENTITY ACCOUNT_HPSS    "chem-var">
+	<!ENTITY QUEUE_HPSS      "batch">
+	<!ENTITY WALLTIME_HPSS  "01:59:00">
+	<!ENTITY RESOURCES_HPSS "1">
+	<!ENTITY NATIVE_HPSS    "--export=NONE">
+	<!--ENTITY MEMORIES_HPSS "80000M"-->
+
+	<!ENTITY PARTITION_CHGRES    "hera">
+	<!ENTITY ACCOUNT_CHGRES    "chem-var">
+	<!ENTITY QUEUE_CHGRES      "batch">
+	<!ENTITY WALLTIME_CHGRES  "00:29:00">
+	<!ENTITY RESOURCES_CHGRES "1:ppn=40:tpp=1">
+	<!ENTITY MEMORIES_CHGRES "80000M">
+	<!ENTITY NATIVE_CHGRES    "--export=NONE">
+
+	<!ENTITY SCHEDULER  "slurm">
+]>
+
+<workflow realtime="F" scheduler="slurm" cyclethrottle="3" taskthrottle="25">
+
+	<log verbosity="10"><cyclestr>&ROTDIR;/logs/xmlLog/@Y@m@d@H.log</cyclestr></log>
+
+	<!-- Define the cycles -->
+	<cycledef group="gdas_half">&SDATE; &EDATE; 06:00:00</cycledef>
+	<cycledef group="gdas">&SDATE; &EDATE; 06:00:00</cycledef>
+
+<task name="hpss2hera_v14" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/hpss2hera_gdas_nemsio_v14.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_hpss2hera_v14_@H</cyclestr></jobname>
+	<account>&ACCOUNT_HPSS;</account>
+	<queue>&QUEUE_HPSS;</queue>
+	<partition>&PARTITION_HPSS;</partition>
+	<walltime>&WALLTIME_HPSS;</walltime>
+	<cores>&RESOURCES_HPSS;</cores>
+	<!--
+	<memory>&MEMORIES_HPSS;</memory>
+	<native>&NATIVE_HPSS;</native>
+	-->
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/hpss2hera_v14.log</cyclestr></join>
+
+	<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+	<envar><name>GDASHPSSDIR</name><value>&GDASHPSSDIR;</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<not><cycleexistdep cycle_offset="-06:00:00"/></not>
+	</dependency>
+
+</task>
+
+<metatask name="echgres_v14">
+
+	<var name="grp">01 02 03 04 05 06 07 08</var>
+
+	<task name="echgres_v14_#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+		<command>&JOBS_DIR;/echgres_v14gdas.sh</command>
+
+		<jobname><cyclestr>&PSLOT;_echgres#grp#_@H</cyclestr></jobname>
+		<account>&ACCOUNT_CHGRES;</account>
+		<queue>&QUEUE_CHGRES;</queue>
+		<partition>&PARTITION_CHGRES;</partition>
+		<walltime>&WALLTIME_CHGRES;</walltime>
+		<nodes>&RESOURCES_CHGRES;</nodes>
+		<memory>&MEMORIES_CHGRES;</memory>
+		<native>&NATIVE_CHGRES;</native>
+
+		<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/echgres#grp#.log</cyclestr></join>
+
+		<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+		<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+		<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+		<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSGRP</name><value>#grp#</value></envar>
+		<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
+		<envar><name>LEVS</name><value>&LEVS;</value></envar>
+		<dependency>
+			<taskdep task="hpss2hera_v14"/>
+		</dependency>
+	</task>
+
+</metatask>
+
+<task name="hera2hpss_v14" cycledefs="gdas" maxtries="&MAXTRIES;" final="true">
+
+	<command>&JOBS_DIR;/hera2hpss_gdas_nc_v14.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_hera2hpss_v14_@H</cyclestr></jobname>
+	<account>&ACCOUNT_HPSS;</account>
+	<queue>&QUEUE_HPSS;</queue>
+	<partition>&PARTITION_HPSS;</partition>
+	<walltime>&WALLTIME_HPSS;</walltime>
+	<cores>&RESOURCES_HPSS;</cores>
+	<!--
+	<memory>&MEMORIES_HPSS;</memory>
+	<native>&NATIVE_HPSS;</native>
+	-->
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/hera2hpss_v14.log</cyclestr></join>
+
+	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+	<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+	<envar><name>CHGRESHPSSDIR</name><value>&CHGRESHPSSDIR;</value></envar>
+	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+	<envar><name>NMEMS</name><value>&NMEMS;</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+
+	<dependency>
+		<metataskdep metatask="echgres_v14"/>
+	</dependency>
+
+</task>
+
+</workflow>

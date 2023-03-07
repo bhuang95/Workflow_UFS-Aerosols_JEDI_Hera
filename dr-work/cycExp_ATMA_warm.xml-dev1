@@ -1,0 +1,890 @@
+<?xml version="1.0"?>
+<!DOCTYPE workflow
+[
+	<!--
+	PROGRAM
+		Main workflow manager for Global Forecast System
+
+	NOTES:
+		This workflow was automatically generated at 2023-01-27 18:29:13.198072
+	-->
+	<!ENTITY PSLOT "cycExp_ATMA_warm">
+	<!ENTITY HOMEgfs "/home/Bo.Huang/JEDI-2020/expRuns/exp_UFS-Aerosols/cycExp_ATMA_warm/">
+	<!ENTITY HOMEjedi "/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/MISC/codeDev/JEDI/jedi-bundle/20230113/build/">
+	<!ENTITY TOPRUNDIR "/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/">
+	<!ENTITY JOBS_DIR "&HOMEgfs;/jobs/rocoto">
+
+	<!-- Experiment and Rotation directory -->
+	<!ENTITY EXPDIR "&HOMEgfs;/dr-work/">
+	<!ENTITY ROTDIR "&TOPRUNDIR;/&PSLOT;/dr-data">
+	<!ENTITY DATAROOTTOP "/scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/&PSLOT;/">
+
+	<!ENTITY COMROOT "/scratch1/NCEPDEV/global/glopara/com/">
+
+	<!ENTITY MAXTRIES "100">
+
+	<!-- Model configuration -->
+	<!ENTITY SDATE "201906140600">
+	<!ENTITY EDATE "201906141200">
+	<!ENTITY NET "gfs">
+	<!ENTITY CDUMP "gdas">
+	<!ENTITY RUN "gdas">
+	<!ENTITY CASE     "C96">
+	<!ENTITY CASE_CNTL     "&CASE;">
+	<!ENTITY CASE_ENKF     "C96">
+
+	<!-- JEDI configuration -->
+	<!ENTITY OBSDIR     "/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/ViirsAod/C96/">
+	<!ENTITY AODTYPE "VIIRS">
+
+
+
+	<!-- Run Envrionment -->
+	<!ENTITY RUN_ENVIR "emc">
+
+
+	<!-- Machine related entities -->
+	<!ENTITY PARTITION    "hera">
+	<!ENTITY ACCOUNT    "chem-var">
+	<!ENTITY HPSS_ACCOUNT "chem-var">
+	<!ENTITY QUEUE      "debug">
+	<!ENTITY QUEUE_ARCH "service">
+	<!ENTITY PARTITION_ARCH "service">
+	<!ENTITY SCHEDULER  "slurm">
+
+	<!-- ROCOTO parameters that control workflow -->
+	<!ENTITY QUEUE_ANAL_GDAS     "&QUEUE;">
+	<!ENTITY WALLTIME_ANAL_GDAS  "00:29:00">
+	<!ENTITY RESOURCES_ANAL_GDAS "3:ppn=2:tpp=1">
+	<!ENTITY MEMORIES_ANAL_GDAS "80000M">
+	<!ENTITY NATIVE_ANAL_GDAS    "--export=NONE">
+
+	<!ENTITY QUEUE_ANAL_ENKF_GDAS     "&QUEUE;">
+	<!ENTITY WALLTIME_ANAL_ENKF_GDAS  "00:29:00">
+	<!ENTITY RESOURCES_ANAL_ENKF_GDAS "3:ppn=2:tpp=1">
+	<!ENTITY MEMORIES_ANAL_ENKF_GDAS "80000M">
+	<!ENTITY NATIVE_ANAL_ENKF_GDAS    "--export=NONE">
+
+	<!ENTITY QUEUE_FCST_GDAS     "&QUEUE;">
+	<!ENTITY WALLTIME_FCST_GDAS  "00:29:00">
+	<!ENTITY RESOURCES_FCST_GDAS "5:ppn=40:tpp=1">
+	<!ENTITY NATIVE_FCST_GDAS    "--export=NONE">
+
+	<!ENTITY QUEUE_EFCS_GDAS     "&QUEUE;">
+	<!ENTITY WALLTIME_EFCS_GDAS  "00:29:00">
+	<!ENTITY RESOURCES_EFCS_GDAS "5:ppn=40:tpp=1">
+	<!ENTITY NATIVE_EFCS_GDAS    "--export=NONE">
+
+	<!ENTITY QUEUE_EMEAN_GDAS     "&QUEUE;">
+	<!ENTITY WALLTIME_EMEAN_GDAS  "00:29:00">
+	<!ENTITY RESOURCES_EMEAN_GDAS "1:ppn=1:tpp=1">
+	<!ENTITY NATIVE_EMEAN_GDAS    "--export=NONE">
+
+]>
+
+<workflow realtime="F" scheduler="slurm" cyclethrottle="3" taskthrottle="25">
+
+	<log verbosity="10"><cyclestr>&ROTDIR;/logs/xmlLog/@Y@m@d@H.log</cyclestr></log>
+
+	<!-- Define the cycles -->
+	<cycledef group="gdas_half">&SDATE; &EDATE; 06:00:00</cycledef>
+	<cycledef group="gdas">&SDATE; &EDATE; 06:00:00</cycledef>
+<!--HBO
+<task name="gdasprep" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/prep.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdasprep_@H</cyclestr></jobname>
+	<account>wrf-chem</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:45:00</walltime>
+	<nodes>2:ppn=2:tpp=1</nodes>
+	<memory>40G</memory>
+	<native>HBOexport=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasprep.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/cycExp_ATMA_warm</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/glopara/com</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV/stmp2/Bo.Huang/RUNDIRS/cycExp_ATMA_warm</value></envar>
+
+	<dependency>
+		<and>
+			<metataskdep metatask="gdaspost" cycle_offset="-06:00:00"/>
+			<taskdep task="gdasfcst" cycle_offset="-06:00:00"/>
+			<datadep><cyclestr offset="-06:00:00">&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc</cyclestr></datadep>
+			<datadep><cyclestr>/scratch1/NCEPDEV/global/glopara/dump/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.updated.status.tm00.bufr_d</cyclestr></datadep>
+		</and>
+	</dependency>
+
+</task>
+HBO-->
+
+<!--HBO
+<task name="gdasanal" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/anal.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdasanal_@H</cyclestr></jobname>
+	<account>wrf-chem</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:50:00</walltime>
+	<nodes>11:ppn=8:tpp=5</nodes>
+	<native>HBOexport=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasanal.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/cycExp_ATMA_warm</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/glopara/com</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/cycExp_ATMA_warm</value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdasprep"/>
+
+			<metataskdep metatask="gdasepmn" cycle_offset="-06:00:00"/>
+		</and>
+	</dependency>
+
+</task>
+HBO-->
+
+<!--HBO
+<task name="gdasanalcalc" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/analcalc.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdasanalcalc_@H</cyclestr></jobname>
+	<account>wrf-chem</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>4:ppn=40:tpp=1</nodes>
+	<native>HBOexport=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasanalcalc.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/cycExp_ATMA_warm</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/glopara/com</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/cycExp_ATMA_warm</value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdasanal"/>
+			<taskdep task="gdassfcanl"/>
+			<taskdep task="gdasechgres" cycle_offset="-06:00:00"/>
+		</and>
+	</dependency>
+
+</task>
+HBO-->
+
+<!--HBO
+<task name="gdasaeroanlinit" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/aeroanlinit.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdasaeroanlinit_@H</cyclestr></jobname>
+	<account>wrf-chem</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>1:ppn=40:tpp=1</nodes>
+	<memory>3072M</memory>
+	<native>HBOexport=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasaeroanlinit.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/NCEPDEV/stmp2/Andrew.Tangborn/gw_cory_nov1/global-workflow</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/cycExp_ATMA_warm</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/glopara/com</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/cycExp_ATMA_warm</value></envar>
+
+	<dependency>
+		<and>
+
+			<metataskdep metatask="gdaspost" cycle_offset="-06:00:00"/>
+			<taskdep task="gdasfcst" cycle_offset="-06:00:00"/>
+			<datadep><cyclestr offset="-06:00:00">&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc</cyclestr></datadep>
+			<datadep><cyclestr>/scratch1/NCEPDEV/global/glopara/dump/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.updated.status.tm00.bufr_d</cyclestr></datadep>
+		</and>
+	</dependency>
+
+</task>
+HBO-->
+
+<task name="gdasaeroanlrun" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/aeroanlrun.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdasaeroanlrun_@H</cyclestr></jobname>
+	<account>&ACCOUNT;</account>
+	<queue>&QUEUE_ANAL_GDAS;</queue>
+	<partition>&PARTITION;</partition>
+	<walltime>&WALLTIME_ANAL_GDAS;</walltime>
+	<nodes>&RESOURCES_ANAL_GDAS;</nodes>
+	<memory>&MEMORIES_ANAL_GDAS;</memory>
+	<native>&NATIVE_ANAL_GDAS;</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasaeroanlrun.log</cyclestr></join>
+
+	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+	<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+	<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
+	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+	<envar><name>HOMEjedi</name><value>&HOMEjedi;</value></envar>
+	<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+	<envar><name>NET</name><value>&NET;</value></envar>
+	<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
+	<envar><name>RUN</name><value>&RUN;</value></envar>
+	<envar><name>COMROOT</name><value>&COMROOT;</value></envar>
+	<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>OBSDIR</name><value>&OBSDIR;</value></envar>
+	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+	<envar><name>AODTYPE</name><value>&AODTYPE;</value></envar>
+
+
+	<dependency>
+		<taskdep task="gdasaeroanlinit"/>
+	</dependency>
+
+</task>
+
+<task name="gdasaeroenkfrun" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/aeroanlenkf.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdasaeroenkfrun_@H</cyclestr></jobname>
+	<account>&ACCOUNT;</account>
+	<queue>&QUEUE_ANAL_ENKF_GDAS;</queue>
+	<partition>&PARTITION;</partition>
+	<walltime>&WALLTIME_ANAL_ENKF_GDAS;</walltime>
+	<nodes>&RESOURCES_ANAL_ENKF_GDAS;</nodes>
+	<memory>&MEMORIES_ANAL_ENKF_GDAS;</memory>
+	<native>&NATIVE_ANAL_ENKF_GDAS;</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasaeroenkfrun.log</cyclestr></join>
+
+	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+	<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+	<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
+	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+	<envar><name>HOMEjedi</name><value>&HOMEjedi;</value></envar>
+	<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+	<envar><name>NET</name><value>&NET;</value></envar>
+	<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
+	<envar><name>RUN</name><value>&RUN;</value></envar>
+	<envar><name>COMROOT</name><value>&COMROOT;</value></envar>
+	<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>OBSDIR</name><value>&OBSDIR;</value></envar>
+	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+	<envar><name>AODTYPE</name><value>&AODTYPE;</value></envar>
+
+
+	<dependency>
+		<taskdep task="gdasaeroanlinit"/>
+	</dependency>
+
+</task>
+
+<metatask name="gdasaeroanlrce">
+
+	<var name="grp">01 02</var>
+
+	<task name="gdasaeroanlrce#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+		<command>&JOBS_DIR;/finalize_ens_aeroanl_restart.sh</command>
+
+		<jobname><cyclestr>&PSLOT;_gdasaeroanlrce#grp#_@H</cyclestr></jobname>
+		<account>&ACCOUNT;</account>
+		<queue>&QUEUE_EMEAN_GDAS;</queue>
+		<partition>&PARTITION;</partition>
+		<walltime>&WALLTIME_EMEAN_GDAS;</walltime>
+		<nodes>&RESOURCES_EMEAN_GDAS;</nodes>
+		<native>&NATIVE_EMEAN_GDAS;</native>
+
+		<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasaeroanlrce#grp#.log</cyclestr></join>
+
+		<envar><name>SDATE</name><value>&SDATE;</value></envar>
+		<envar><name>EDATE</name><value>&EDATE;</value></envar>
+		<envar><name>CASE</name><value>&CASE;</value></envar>
+		<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+		<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+		<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+		<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
+		<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+		<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+		<envar><name>NET</name><value>&NET;</value></envar>
+		<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
+		<envar><name>RUN</name><value>&RUN;</value></envar>
+		<envar><name>COMROOT</name><value>&COMROOT;</value></envar>
+		<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>ENSGRP</name><value>#grp#</value></envar>
+		<envar><name>OBSDIR</name><value>&OBSDIR;</value></envar>
+		<envar><name>AODTYPE</name><value>&AODTYPE;</value></envar>
+		<!--
+		<dependency>
+			<or>
+				<and>
+					<metataskdep metatask="gdasecmn"/>
+					<taskdep task="gdasesfc"/>
+				</and>
+				<not><cycleexistdep cycle_offset="-06:00:00"/></not>
+			</or>
+		</dependency>
+                -->
+	</task>
+
+</metatask>
+
+<!--HBO
+<task name="gdasaeroanlfinal" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/aeroanlfinal.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdasaeroanlfinal_@H</cyclestr></jobname>
+	<account>wrf-chem</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>1:ppn=40:tpp=1</nodes>
+	<memory>3072M</memory>
+	<native>HBOexport=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasaeroanlfinal.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/cycExp_ATMA_warm</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/glopara/com</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/cycExp_ATMA_warm</value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdasaeroanlrun"/>
+		</and>
+	</dependency>
+
+</task>
+HBO-->
+
+<!--HBO
+<task name="gdasanaldiag" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/analdiag.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdasanaldiag_@H</cyclestr></jobname>
+	<account>wrf-chem</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>3:ppn=40:tpp=1</nodes>
+	<memory>48GB</memory>
+	<native>HBOexport=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasanaldiag.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/cycExp_ATMA_warm</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/glopara/com</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/cycExp_ATMA_warm</value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdasanal"/>
+		</and>
+	</dependency>
+
+</task>
+-->
+
+<task name="gdasfcst" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/fcst.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdasfcst_@H</cyclestr></jobname>
+	<account>&ACCOUNT;</account>
+	<queue>&QUEUE_FCST_GDAS;</queue>
+	<partition>&PARTITION;</partition>
+	<walltime>&WALLTIME_FCST_GDAS;</walltime>
+	<nodes>&RESOURCES_FCST_GDAS;</nodes>
+	<native>&NATIVE_FCST_GDAS;</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasfcst.log</cyclestr></join>
+
+	<envar><name>SDATE</name><value>&SDATE;</value></envar>
+	<envar><name>EDATE</name><value>&EDATE;</value></envar>
+	<envar><name>CASE</name><value>&CASE;</value></envar>
+	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+	<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+	<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
+	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+	<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+	<envar><name>NET</name><value>&NET;</value></envar>
+	<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
+	<envar><name>RUN</name><value>&RUN;</value></envar>
+	<envar><name>COMROOT</name><value>&COMROOT;</value></envar>
+	<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+
+	<!--HBO
+	<dependency>
+		<or>
+			<and>
+				<taskdep task="gdassfcanl"/>
+				<taskdep task="gdasgldas"/>
+				<taskdep task="gdasaeroanlfinal"/>
+			</and>
+			<not><cycleexistdep cycle_offset="-06:00:00"/></not>
+		</or>
+	</dependency>
+	HBO-->
+
+</task>
+
+
+<!--HBO
+<task name="gdaseupd" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/eupd.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdaseupd_@H</cyclestr></jobname>
+	<account>wrf-chem</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:30:00</walltime>
+	<nodes>5:ppn=10:tpp=4</nodes>
+	<native>HBOexport=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdaseupd.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/cycExp_ATMA_warm</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/glopara/com</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/cycExp_ATMA_warm</value></envar>
+
+	<dependency>
+		<taskdep task="gdasediag"/>
+	</dependency>
+
+</task>
+HBO-->
+
+<!--HBO
+<task name="gdasechgres" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/echgres.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdasechgres_@H</cyclestr></jobname>
+	<account>wrf-chem</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:10:00</walltime>
+	<nodes>3:ppn=1:tpp=40</nodes>
+	<native>HBOexport=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasechgres.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/cycExp_ATMA_warm</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/glopara/com</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/cycExp_ATMA_warm</value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdasfcst"/>
+			<taskdep task="gdasefcs01"/>
+		</and>
+	</dependency>
+
+</task>
+-->
+
+<!--HBO
+<task name="gdasediag" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/ediag.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdasediag_@H</cyclestr></jobname>
+	<account>wrf-chem</account>
+	<queue>batch</queue>
+	<partition>hera</partition>
+	<walltime>00:15:00</walltime>
+	<nodes>2:ppn=40:tpp=1</nodes>
+	<memory>24GB</memory>
+	<native>HBOexport=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasediag.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/cycExp_ATMA_warm</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/glopara/com</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/cycExp_ATMA_warm</value></envar>
+
+	<dependency>
+		<taskdep task="gdaseobs"/>
+	</dependency>
+
+</task>
+HBO-->
+
+<!--HBO
+<metatask name="gdasecmn">
+
+	<var name="grp">000 001 002</var>
+	<var name="dep">003 006 009</var>
+	<var name="lst">003 006 009</var>
+
+	<task name="gdasecen#grp#" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+		<command>&JOBS_DIR;/ecen.sh</command>
+
+		<jobname><cyclestr>&PSLOT;_gdasecen#grp#_@H</cyclestr></jobname>
+		<account>wrf-chem</account>
+		<queue>batch</queue>
+		<partition>hera</partition>
+		<walltime>00:10:00</walltime>
+		<nodes>4:ppn=20:tpp=2</nodes>
+		<native>HBOexport=NONE</native>
+
+		<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasecen#grp#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow</value></envar>
+		<envar><name>EXPDIR</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/cycExp_ATMA_warm</value></envar>
+		<envar><name>NET</name><value>gfs</value></envar>
+		<envar><name>CDUMP</name><value>gdas</value></envar>
+		<envar><name>RUN</name><value>gdas</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/glopara/com</value></envar>
+		<envar><name>DATAROOT</name><value>/scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/cycExp_ATMA_warm</value></envar>
+		<envar><name>FHRGRP</name><value>#grp#</value></envar>
+		<envar><name>FHRLST</name><value>#lst#</value></envar>
+
+		<dependency>
+			<and>
+				<taskdep task="gdasanalcalc"/>
+				<taskdep task="gdaseupd"/>
+			</and>
+		</dependency>
+
+	</task>
+
+</metatask>
+HBO-->
+
+<metatask name="gdasefmn">
+
+	<var name="grp">01 02</var>
+
+	<task name="gdasefcs#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+		<command>&JOBS_DIR;/efcs.sh</command>
+
+		<jobname><cyclestr>&PSLOT;_gdasefcs#grp#_@H</cyclestr></jobname>
+		<account>&ACCOUNT;</account>
+		<queue>&QUEUE_EFCS_GDAS;</queue>
+		<partition>&PARTITION;</partition>
+		<walltime>&WALLTIME_EFCS_GDAS;</walltime>
+		<nodes>&RESOURCES_EFCS_GDAS;</nodes>
+		<native>&NATIVE_EFCS_GDAS;</native>
+
+		<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasefcs#grp#.log</cyclestr></join>
+
+		<envar><name>SDATE</name><value>&SDATE;</value></envar>
+		<envar><name>EDATE</name><value>&EDATE;</value></envar>
+		<envar><name>CASE</name><value>&CASE;</value></envar>
+		<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+		<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+		<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
+		<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+		<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+		<envar><name>NET</name><value>&NET;</value></envar>
+		<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
+		<envar><name>RUN</name><value>&RUN;</value></envar>
+		<envar><name>COMROOT</name><value>&COMROOT;</value></envar>
+		<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>ENSGRP</name><value>#grp#</value></envar>
+		<!--
+		<dependency>
+			<or>
+				<and>
+					<metataskdep metatask="gdasecmn"/>
+					<taskdep task="gdasesfc"/>
+				</and>
+				<not><cycleexistdep cycle_offset="-06:00:00"/></not>
+			</or>
+		</dependency>
+                -->
+	</task>
+
+</metatask>
+
+<metatask name="gdasemean">
+
+	<var name="itile">1 2 3 4 5 6</var>
+
+	<task name="gdasemean#itile#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+		<command>&JOBS_DIR;/calc_ensmean_restart.sh</command>
+
+		<jobname><cyclestr>&PSLOT;_gdasemean#itile#_@H</cyclestr></jobname>
+		<account>&ACCOUNT;</account>
+		<queue>&QUEUE_EMEAN_GDAS;</queue>
+		<partition>&PARTITION;</partition>
+		<walltime>&WALLTIME_EMEAN_GDAS;</walltime>
+		<nodes>&RESOURCES_EMEAN_GDAS;</nodes>
+		<native>&NATIVE_EMEAN_GDAS;</native>
+
+		<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasemean#itile#.log</cyclestr></join>
+
+		<envar><name>SDATE</name><value>&SDATE;</value></envar>
+		<envar><name>EDATE</name><value>&EDATE;</value></envar>
+		<envar><name>CASE</name><value>&CASE;</value></envar>
+		<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+		<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+		<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+		<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
+		<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+		<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+		<envar><name>NET</name><value>&NET;</value></envar>
+		<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
+		<envar><name>RUN</name><value>&RUN;</value></envar>
+		<envar><name>COMROOT</name><value>&COMROOT;</value></envar>
+		<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>ITILE</name><value>#itile#</value></envar>
+		<envar><name>OBSDIR</name><value>&OBSDIR;</value></envar>
+		<envar><name>AODTYPE</name><value>&AODTYPE;</value></envar>
+		<!--
+		<dependency>
+			<or>
+				<and>
+					<metataskdep metatask="gdasecmn"/>
+					<taskdep task="gdasesfc"/>
+				</and>
+				<not><cycleexistdep cycle_offset="-06:00:00"/></not>
+			</or>
+		</dependency>
+                -->
+	</task>
+
+</metatask>
+
+<!--HBO
+<metatask name="gdasepmn">
+
+	<var name="grp">000 001 002 003 004 005 006</var>
+	<var name="dep">f003 f004 f005 f006 f007 f008 f009</var>
+	<var name="lst">f003 f004 f005 f006 f007 f008 f009</var>
+
+	<task name="gdasepos#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+		<command>&JOBS_DIR;/epos.sh</command>
+
+		<jobname><cyclestr>&PSLOT;_gdasepos#grp#_@H</cyclestr></jobname>
+		<account>wrf-chem</account>
+		<queue>batch</queue>
+		<partition>hera</partition>
+		<walltime>00:15:00</walltime>
+		<nodes>14:ppn=6:tpp=6</nodes>
+		<native>HBOexport=NONE</native>
+
+		<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasepos#grp#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow</value></envar>
+		<envar><name>EXPDIR</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/cycExp_ATMA_warm</value></envar>
+		<envar><name>NET</name><value>gfs</value></envar>
+		<envar><name>CDUMP</name><value>gdas</value></envar>
+		<envar><name>RUN</name><value>gdas</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/glopara/com</value></envar>
+		<envar><name>DATAROOT</name><value>/scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/cycExp_ATMA_warm</value></envar>
+		<envar><name>FHRGRP</name><value>#grp#</value></envar>
+		<envar><name>FHRLST</name><value>#lst#</value></envar>
+
+		<dependency>
+			<metataskdep metatask="gdasefmn"/>
+		</dependency>
+
+	</task>
+
+</metatask>
+HBO-->
+
+
+<!--HBO
+<metatask name="gdaseamn">
+
+	<var name="grp">00</var>
+
+	<task name="gdasearc#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+		<command>&JOBS_DIR;/earc.sh</command>
+
+		<jobname><cyclestr>&PSLOT;_gdasearc#grp#_@H</cyclestr></jobname>
+		<account>wrf-chem</account>
+		<queue>batch</queue>
+		<partition>service</partition>
+		<walltime>06:00:00</walltime>
+		<nodes>1:ppn=1:tpp=1</nodes>
+		<memory>2048M</memory>
+		<native>HBOexport=NONE</native>
+
+		<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasearc#grp#.log</cyclestr></join>
+
+		<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+		<envar><name>HOMEgfs</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow</value></envar>
+		<envar><name>EXPDIR</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/cycExp_ATMA_warm</value></envar>
+		<envar><name>NET</name><value>gfs</value></envar>
+		<envar><name>CDUMP</name><value>gdas</value></envar>
+		<envar><name>RUN</name><value>gdas</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/glopara/com</value></envar>
+		<envar><name>DATAROOT</name><value>/scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/cycExp_ATMA_warm</value></envar>
+		<envar><name>ENSGRP</name><value>#grp#</value></envar>
+
+		<dependency>
+			<metataskdep metatask="gdasepmn"/>
+		</dependency>
+
+	</task>
+
+</metatask>
+HBO-->
+
+<!--HBO
+<task name="gdasarch" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+	<command>&JOBS_DIR;/arch.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdasarch_@H</cyclestr></jobname>
+	<account>wrf-chem</account>
+	<queue>batch</queue>
+	<partition>service</partition>
+	<walltime>06:00:00</walltime>
+	<nodes>1:ppn=1:tpp=1</nodes>
+	<memory>2048M</memory>
+	<native>HBOexport=NONE</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasarch.log</cyclestr></join>
+
+	<envar><name>RUN_ENVIR</name><value>emc</value></envar>
+	<envar><name>HOMEgfs</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow</value></envar>
+	<envar><name>EXPDIR</name><value>/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/cycExp_ATMA_warm</value></envar>
+	<envar><name>NET</name><value>gfs</value></envar>
+	<envar><name>CDUMP</name><value>gdas</value></envar>
+	<envar><name>RUN</name><value>gdas</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+	<envar><name>COMROOT</name><value>/scratch1/NCEPDEV/global/glopara/com</value></envar>
+	<envar><name>DATAROOT</name><value>/scratch1/NCEPDEV//scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/cycExp_ATMA_warm</value></envar>
+
+	<dependency>
+		<and>
+			<taskdep task="gdasvrfy"/>
+		</and>
+	</dependency>
+
+</task>
+-->
+
+</workflow>

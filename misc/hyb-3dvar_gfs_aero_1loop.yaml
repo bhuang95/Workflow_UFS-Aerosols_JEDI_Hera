@@ -1,0 +1,123 @@
+cost function:
+  background:
+    datetime: 2019-06-14T06:00:00Z
+    filetype: fms restart
+    datapath: INPUT/CONTROL
+    filename_core: 20190614.060000.fv_core.res.nc
+    filename_trcr: 20190614.060000.fv_tracer.res.nc
+    filename_cplr: 20190614.060000.coupler.res
+    state variables: [T,DELP,sphum,
+                      so4,bc1,bc2,oc1,oc2,
+                      dust1,dust2,dust3,dust4,dust5,
+                      seas1,seas2,seas3,seas4,seas5]
+  background error:
+    covariance model: hybrid
+    components:
+    - covariance:
+        covariance model: SABER
+        saber central block:
+          saber block name: ID
+      weight:
+        value: 0.01
+    - covariance:
+        covariance model: ensemble
+        members from template:
+          template:
+            datetime: 2019-06-14T06:00:00Z
+            filetype: fms restart
+            state variables: &aerovars [so4,bc1,bc2,oc1,oc2,
+                                        dust1,dust2,dust3,dust4,dust5,
+                                        seas1,seas2,seas3,seas4,seas5]
+            datapath: INPUT/mem%mem%/
+            filename_trcr: 20190614.060000.fv_tracer.res.nc
+            filename_cplr: 20190614.060000.coupler.res
+          pattern: '%mem%'
+          nmembers: 4
+          zero padding: 3
+        localization:
+          localization method: SABER
+          saber central block:
+            saber block name: BUMP_NICAS
+            active variables: [mass_fraction_of_sulfate_in_air,mass_fraction_of_hydrophobic_black_carbon_in_air,mass_fraction_of_hydrophilic_black_carbon_in_air,mass_fraction_of_hydrophobic_organic_carbon_in_air,mass_fraction_of_hydrophilic_organic_carbon_in_air,
+                               mass_fraction_of_dust001_in_air,mass_fraction_of_dust002_in_air,mass_fraction_of_dust003_in_air,mass_fraction_of_dust004_in_air,mass_fraction_of_dust005_in_air,
+                               mass_fraction_of_sea_salt001_in_air,mass_fraction_of_sea_salt002_in_air,mass_fraction_of_sea_salt003_in_air,mass_fraction_of_sea_salt004_in_air,mass_fraction_of_sea_salt005_in_air]
+            bump:
+              io:
+                #files prefix: BUMP/20190614.120000.fv3jedi_bumpparameters_nicas_gfs_aero_logp
+                files prefix: BUMP-atmos/fv3jedi_bumpparameters_nicas_3D_gfs_C96_logp
+                alias:
+                - in code: common
+                  in file: fixed_2500km_1.5
+              drivers:
+                multivariate strategy: duplicated
+                read local nicas: true
+      weight:
+        value: 0.99
+  observations:
+    observers:
+    - obs space:
+        name: Aod
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: INPUT/aod_viirs_obs_2018041500_sf6_hdf5_test.nc4
+            #obsfile: INPUT/gdas.t06z.viirs_n20.2019061406.nc 
+        obsdataout:
+          engine:
+            type: H5File
+            obsfile: INPUT/aod_hofx_viirs_3dvar_gfs_aero_2018041500_sf6.nc4
+        simulated variables: [aerosolOpticalDepth]
+        channels: 4
+      obs operator:
+        #name: AodCRTM
+        name: AodLUTs
+        #Absorbers: [H2O,O3]
+        obs options:
+          Sensor_ID: v.viirs-m_npp
+          EndianType: little_endian
+          CoefficientPath: ./CRTM1/Little_Endian/
+          #AerosolOption: aerosols_gocart_default
+          AerosolOption: aerosols_gocart_1
+          RCFile: geosaod.rc
+          model units coeff: 1.e-9
+      obs error:
+        covariance model: diagonal
+  cost type: 3D-Var
+  analysis variables: *aerovars
+  window begin: 2019-06-14T03:00:00Z
+  window length: PT6H
+  geometry:
+    fms initialization:
+      namelist filename: Data/fv3files/fmsmpp.nml
+      field table filename: Data/fv3files/field_table_gfdl
+    akbk: Data/fv3files/akbk127.nc4
+    npx: 97
+    npy: 97
+    npz: 127
+    field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
+final:
+  diagnostics:
+    departures: oman
+output:
+  filetype: fms restart
+  datapath: ANALYSIS
+  prefix: hyb-3dvar-gfs_aero
+  frequency: PT1H
+variational:
+  minimizer:
+    algorithm: DRIPCG
+  iterations:
+  - ninner: 10
+    gradient norm reduction: 1e-10
+    test: on
+    geometry:
+      akbk: Data/fv3files/akbk127.nc4
+      npx: 97
+      npy: 97
+      npz: 127
+      field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
+    diagnostics:
+      departures: ombg
+#test:
+#  reference filename: ./hyb-3dvar_gfs_aero.ref
+#  test output filename: ./hyb-3dvar_gfs_aero.test.out

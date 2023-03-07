@@ -1,0 +1,36 @@
+#!/bin/bash -x
+
+########## config.aeroanlrun ##########
+# Aerosol Analysis specific
+
+echo "BEGIN: config.aeroanlrun"
+
+# Get task specific resources
+. $EXPDIR/config.resources aeroanlrun
+export layout_envar="1,1"  #"2,4" 
+export io_layout_envar="1,1"  # Don't Change
+export ncore_envar=6         # ncore_anal=6*l1*l2 (l1, l2 in layout_anal)
+
+export layout_letkf="1,1"  #"2,4" 
+export io_layout_letkf="1,1"  # Don't Change
+export ncore_letkf=6         # ncore_anal=6*l1*l2 (l1, l2 in layout_anal)
+
+export layout_hofx="1,1"  #"2,2" 
+export io_layout_hofx="1,1"  # Don't Change
+export ncore_hofx=6         # ncore_anal=6*l1*l2 (l1, l2 in layout_anal)
+
+export STATICB_WEG="0.01"
+export ENSB_WEG="0.99"
+
+export AODOPE="AodLUTs"
+
+export COMIN_OBS=${OBSDIR}
+export AODTYPE=${AODTYPE}
+export GDASAERORUNSH=${HOMEgfs}/scripts/exgdas_global_aeroanl_3denvar_run.sh
+export GDASAEROENKFRUNSH=${HOMEgfs}/scripts/exgdas_global_aeroanl_enkf_run.sh
+export MEANTRCRVARS="sphum,so4,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4,seas5"
+export MEANCOREVARS="T,delp"
+export RPLTRCRVARS="so4,bc1,bc2,oc1,oc2,dust1,dust2,dust3,dust4,dust5,seas1,seas2,seas3,seas4,seas5"
+#export GDASAERORUNSH="/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow/scripts/exgdas_global_aero_analysis_run.sh"
+
+echo "END: config.aeroanlrun"
