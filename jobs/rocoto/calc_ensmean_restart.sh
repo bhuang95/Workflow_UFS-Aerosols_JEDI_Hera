@@ -41,7 +41,7 @@ FYMD=${FDATE:0:8}
 FH=${FDATE:8:2}
 
 FENSDIR=${ROTDIR}/enkfgdas.${CYMD}/${CH}
-FENSMEANRTDIR=${ROTDIR}/enkfgdas.${CYMD}/${CH}/ensmean/${COMPONENT}/RESTART/
+FENSMEANRTDIR=${ROTDIR}/enkfgdas.${CYMD}/${CH}/${COMPONENT}/ensmean/RESTART/
 ANLPREFIX=${FYMD}.${FH}0000
 
 [[ ! -d ${FENSMEANRTDIR} ]] && mkdir -p ${FENSMEANRTDIR}
@@ -73,7 +73,7 @@ for TILEFILE in ${TILEFILES}; do
     IMEM=1
     while [ ${IMEM} -le ${NMEM} ]; do
         MEMSTR="mem"`printf %03d ${IMEM}`
-        MEMFILE_IN=${FENSDIR}/${MEMSTR}/${COMPONENT}/RESTART/${ANLPREFIX}.${TILEFILE}
+        MEMFILE_IN=${FENSDIR}/${COMPONENT}/${MEMSTR}/RESTART/${ANLPREFIX}.${TILEFILE}
         MEMFILE_OUT=${TILEDIR}/${MEMSTR}.${TILEFILE}
         if [ ${IMEM} -eq 1 ]; then
             ${NCP} ${MEMFILE_IN} ${TILEDIR}/ensmean.${TILEFILE}
@@ -91,8 +91,8 @@ for TILEFILE in ${TILEFILES}; do
     ${NMV} ensmean.${TILEFILE}  ${FENSMEANRTDIR}/${ANLPREFIX}.${TILEFILE}
 done
     if [ ${ITILE} -eq 1 ]; then
-        ${NCP} ${FENSDIR}/mem001/${COMPONENT}/RESTART/${ANLPREFIX}.coupler.res ${FENSMEANRTDIR}/
-        ${NCP} ${FENSDIR}/mem001/${COMPONENT}/RESTART/${ANLPREFIX}.fv_core.res.nc ${FENSMEANRTDIR}/
+        ${NCP} ${FENSDIR}/${COMPONENT}/mem001/RESTART/${ANLPREFIX}.coupler.res ${FENSMEANRTDIR}/
+        ${NCP} ${FENSDIR}/${COMPONENT}/mem001/RESTART/${ANLPREFIX}.fv_core.res.nc ${FENSMEANRTDIR}/
     fi
 
 exit 0

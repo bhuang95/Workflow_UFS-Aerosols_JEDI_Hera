@@ -183,7 +183,7 @@ done
 IMEM=1
 while [ ${IMEM} -le ${NMEM} ]; do
     MEMSTR="mem"`printf %03d ${IMEM}`
-    MEMDIR_IN=${GESENSDIR_IN}/${MEMSTR}/${COMPONENT}
+    MEMDIR_IN=${GESENSDIR_IN}/${COMPONENT}/${MEMSTR}
     MEMDIR_OUT=${DATAINPUT}/${MEMSTR}/
     mkdir -p ${MEMDIR_OUT}
     GESCPLR_IN=${MEMDIR_IN}/RESTART/${ANLPREFIX}.coupler.res

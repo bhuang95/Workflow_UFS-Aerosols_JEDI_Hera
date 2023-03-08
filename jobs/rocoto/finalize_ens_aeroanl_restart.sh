@@ -60,10 +60,10 @@ TRCRRCEANL="fv_tracer_raeroanl"
 # Link ensemble tracer file
 IMEM=${ENSST}
 CNTLDIR="${GDIR}/${COMPONENT}/RESTART/"
-EMEANDIR="${GENSDIR}/ensmean/${COMPONENT}/RESTART/"
+EMEANDIR="${GENSDIR}/${COMPONENT}/ensmean/RESTART/"
 while [ ${IMEM} -le ${ENSED} ]; do
     MEMSTR="mem"`printf %03d ${IMEM}`
-    MEMDIR="${GENSDIR}/${MEMSTR}/${COMPONENT}/RESTART/"
+    MEMDIR="${GENSDIR}/${COMPONENT}/${MEMSTR}/RESTART/"
 
     ITILE=1
     while [ ${ITILE} -le 6 ]; do

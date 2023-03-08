@@ -60,9 +60,9 @@ IMEM=${ENSST}
 while [ ${IMEM} -le ${ENSED} ]; do
     MEMSTR="mem"`printf %03d ${IMEM}`
     if [ ${IMEM} -eq 0 ]; then
-        MEMDIR_IN="${GENSDIR}/ensmean/${COMPONENT}/RESTART/"
+        MEMDIR_IN="${GENSDIR}/${COMPONENT}/ensmean/RESTART/"
     else
-        MEMDIR_IN="${GENSDIR}/${MEMSTR}/${COMPONENT}/RESTART/"
+        MEMDIR_IN="${GENSDIR}/${COMPONENT}/${MEMSTR}/RESTART/"
     fi
     ITILE=1
     while [ ${ITILE} -le 6 ]; do

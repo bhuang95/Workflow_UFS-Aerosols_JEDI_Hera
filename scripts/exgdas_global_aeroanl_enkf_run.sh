@@ -118,9 +118,9 @@ mkdir -p ${DATA}/RPLVARS
 cd ${DATA}/RPLVARS
 ITILE=1
 while [[ ${ITILE} -le 6 ]]; do
-    GESFILE=${COMIN_GES_ENS}/ensmean/${COMPONENT}/RESTART/${CYMD}.${CH}0000.fv_tracer.res.tile${ITILE}.nc
-    ANLFILE=${COMIN_GES_ENS}/ensmean/${COMPONENT}/RESTART/${CYMD}.${CH}0000.fv_tracer_aeroanl.res.tile${ITILE}.nc
-    ANLFILE_TMP=${COMIN_GES_ENS}/ensmean/${COMPONENT}//RESTART/${CYMD}.${CH}0000.fv_tracer_aeroanl_tmp.res.tile${ITILE}.nc
+    GESFILE=${COMIN_GES_ENS}/${COMPONENT}/ensmean/RESTART/${CYMD}.${CH}0000.fv_tracer.res.tile${ITILE}.nc
+    ANLFILE=${COMIN_GES_ENS}/${COMPONENT}/ensmean/RESTART/${CYMD}.${CH}0000.fv_tracer_aeroanl.res.tile${ITILE}.nc
+    ANLFILE_TMP=${COMIN_GES_ENS}/${COMPONENT}/ensmean/RESTART/${CYMD}.${CH}0000.fv_tracer_aeroanl_tmp.res.tile${ITILE}.nc
     ${NCP} ${GESFILE} ${ANLFILE}
     ${NLN} ${ANLFILE_TMP} ./input.tile${ITILE}
     ${NLN} ${ANLFILE} ./output.tile${ITILE}

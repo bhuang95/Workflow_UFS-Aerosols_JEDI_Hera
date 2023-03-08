@@ -37,6 +37,9 @@
 	<!ENTITY OBSDIR     "/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/ViirsAod/C96/">
 	<!ENTITY AODTYPE "VIIRS">
 
+	<!-- Retrieve Met -->
+	<!ENTITY NMEMS "01-40">
+	<!ENTITY CHGRESHPSSDIR "/BMC/fim/5year/MAPP_2018/bhuang/UFS-Aerosols-expRuns/GDASCHGRES-V14/">
 
 	<!-- Run Envrionment -->
 	<!ENTITY RUN_ENVIR "emc">
@@ -45,13 +48,18 @@
 	<!-- Machine related entities -->
 	<!ENTITY PARTITION    "hera">
 	<!ENTITY ACCOUNT    "chem-var">
-	<!ENTITY HPSS_ACCOUNT "chem-var">
 	<!ENTITY QUEUE      "debug">
-	<!ENTITY QUEUE_ARCH "service">
-	<!ENTITY PARTITION_ARCH "service">
 	<!ENTITY SCHEDULER  "slurm">
 
+
 	<!-- ROCOTO parameters that control workflow -->
+	<!ENTITY PARTITION_HPSS    "service">
+	<!ENTITY ACCOUNT_HPSS    "chem-var">
+	<!ENTITY QUEUE_HPSS      "batch">
+	<!ENTITY WALLTIME_HPSS  "01:59:00">
+	<!ENTITY RESOURCES_HPSS "1">
+	<!ENTITY NATIVE_HPSS    "--export=NONE">
+
 	<!ENTITY QUEUE_ANAL_GDAS     "&QUEUE;">
 	<!ENTITY WALLTIME_ANAL_GDAS  "00:29:00">
 	<!ENTITY RESOURCES_ANAL_GDAS "3:ppn=2:tpp=1">
@@ -88,6 +96,34 @@
 	<!-- Define the cycles -->
 	<cycledef group="gdas_half">&SDATE; &EDATE; 06:00:00</cycledef>
 	<cycledef group="gdas">&SDATE; &EDATE; 06:00:00</cycledef>
+
+<task name="gdasretrievemet" cycledefs="gdas" maxtries="&MAXTRIES;" final="true">
+
+	<command>&JOBS_DIR;/retrieve_gdaschgres_v14.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_retrievemet_v14_@H</cyclestr></jobname>
+	<account>&ACCOUNT_HPSS;</account>
+	<queue>&QUEUE_HPSS;</queue>
+	<partition>&PARTITION_HPSS;</partition>
+	<walltime>&WALLTIME_HPSS;</walltime>
+	<cores>&RESOURCES_HPSS;</cores>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/retrievemet_v14.log</cyclestr></join>
+
+	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+	<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+	<envar><name>CHGRESHPSSDIR</name><value>&CHGRESHPSSDIR;</value></envar>
+	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+	<envar><name>NMEMS</name><value>&NMEMS;</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<taskdep task="cleandata" cycle_offset="-06:00:00"/>
+	</dependency>
+
+</task>
 
 <task name="gdasaeroanlrun" cycledefs="gdas" maxtries="&MAXTRIES;">
 

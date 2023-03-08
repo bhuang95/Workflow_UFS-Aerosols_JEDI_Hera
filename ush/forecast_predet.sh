@@ -248,27 +248,27 @@ FV3_GFS_predet(){
     rprefix=enkf$rCDUMP
     memchar=mem$(printf %03i $MEMBER)
   fi
-  memdir=$ROTDIR/${prefix}.$PDY/$cyc/$memchar/atmos
+  memdir=$ROTDIR/${prefix}.$PDY/$cyc/atmos/$memchar/
   if [ ! -d $memdir ]; then mkdir -p $memdir; fi
   #HBO+
-  COMIN_OBS=${DMPDIR}/${prefix}.${PDY}/$cyc/$memchar/atmos
-  COMIN_GES_OBS=${DMPDIR}/${prefix}.${PDY}/$cyc/$memchar/atmos
-  COMINatmos=${ROTDIR}/${prefix}.${PDY}/${cyc}/$memchar/atmos
-  COMOUTatmos=${ROTDIR}/${prefix}.${PDY}/${cyc}/$memchar/atmos
-  COMINwave=${ROTDIR}/${prefix}.${PDY}/${cyc}/$memchar/wave
-  COMOUTwave=${ROTDIR}/${prefix}.${PDY}/${cyc}/$memchar/wave
-  COMINocean=${ROTDIR}/${prefix}.${PDY}/${cyc}/$memchar/ocean
-  COMOUTocean=${ROTDIR}/${prefix}.${PDY}/${cyc}/$memchar/ocean
-  COMINice=${ROTDIR}/${prefix}.${PDY}/${cyc}/$memchar/ice
-  COMOUTice=${ROTDIR}/${prefix}.${PDY}/${cyc}/$memchar/ice
-  COMINaero=${ROTDIR}/${prefix}.${PDY}/${cyc}/$memchar/chem
-  COMOUTaero=${ROTDIR}/${prefix}.${PDY}/${cyc}/$memchar/chem
+  COMIN_OBS=${DMPDIR}/${prefix}.${PDY}/$cyc/atmos/$memchar/
+  COMIN_GES_OBS=${DMPDIR}/${prefix}.${PDY}/$cyc/atmos/$memchar/
+  COMINatmos=${ROTDIR}/${prefix}.${PDY}/${cyc}/atmos/$memchar/
+  COMOUTatmos=${ROTDIR}/${prefix}.${PDY}/${cyc}/atmos/$memchar/
+  COMINwave=${ROTDIR}/${prefix}.${PDY}/${cyc}/wave/$memchar/
+  COMOUTwave=${ROTDIR}/${prefix}.${PDY}/${cyc}/wave/$memchar/
+  COMINocean=${ROTDIR}/${prefix}.${PDY}/${cyc}/ocean/$memchar/
+  COMOUTocean=${ROTDIR}/${prefix}.${PDY}/${cyc}/ocean/$memchar/
+  COMINice=${ROTDIR}/${prefix}.${PDY}/${cyc}/ice/$memchar/
+  COMOUTice=${ROTDIR}/${prefix}.${PDY}/${cyc}/ice/$memchar/
+  COMINaero=${ROTDIR}/${prefix}.${PDY}/${cyc}/chem/$memchar/
+  COMOUTaero=${ROTDIR}/${prefix}.${PDY}/${cyc}/chem/$memchar/
   #HBO+
 
   GDATE=$($NDATE -$assim_freq $CDATE)
   gPDY=$(echo $GDATE | cut -c1-8)
   gcyc=$(echo $GDATE | cut -c9-10)
-  gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar/atmos
+  gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/atmos/$memchar/
 
   if [[ "$DOIAU" = "YES" ]]; then
     sCDATE=$($NDATE -3 $CDATE)
