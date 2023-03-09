@@ -21,7 +21,7 @@
 
 	<!ENTITY COMROOT "/scratch1/NCEPDEV/global/glopara/com/">
 
-	<!ENTITY MAXTRIES "100">
+	<!ENTITY MAXTRIES "5">
 
 	<!-- Model configuration -->
 	<!ENTITY SDATE "201711010000">
@@ -34,12 +34,15 @@
 	<!ENTITY CASE_ENKF     "C192">
 
 	<!-- JEDI configuration -->
-	<!ENTITY OBSDIR     "/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/ViirsAod/C96/">
+	<!ENTITY OBSDIR     "/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/ViirsAod/C192/">
 	<!ENTITY AODTYPE "VIIRS">
+	<!ENTITY AERODA "TRUE">
+	<!ENTITY ENSRUN "TRUE">
 
 	<!-- Retrieve Met -->
-	<!ENTITY NMEMS "01-40">
+	<!ENTITY NMEMSGRPS "01-40">
 	<!ENTITY CHGRESHPSSDIR "/BMC/fim/5year/MAPP_2018/bhuang/UFS-Aerosols-expRuns/GDASCHGRES-V14/">
+	<!ENTITY METRETDIR "&ROTDIR;/RetrieveGDAS/">
 
 	<!-- Run Envrionment -->
 	<!ENTITY RUN_ENVIR "emc">
@@ -47,7 +50,7 @@
 
 	<!-- Machine related entities -->
 	<!ENTITY PARTITION    "hera">
-	<!ENTITY ACCOUNT    "chem-var">
+	<!ENTITY ACCOUNT    "wrf-chem">
 	<!ENTITY QUEUE      "debug">
 	<!ENTITY SCHEDULER  "slurm">
 
@@ -57,29 +60,36 @@
 	<!ENTITY ACCOUNT_HPSS    "chem-var">
 	<!ENTITY QUEUE_HPSS      "batch">
 	<!ENTITY WALLTIME_HPSS  "01:59:00">
-	<!ENTITY RESOURCES_HPSS "1">
+	<!ENTITY RESOURCES_HPSS "1:ppn=1:tpp=1">
+	<!ENTITY MEMORIES_HPSS "80000M">
 	<!ENTITY NATIVE_HPSS    "--export=NONE">
+
+	<!ENTITY QUEUE_CALCINC_GDAS     "&QUEUE;">
+	<!ENTITY WALLTIME_CALCINC_GDAS  "00:29:00">
+	<!ENTITY RESOURCES_CALCINC_GDAS "1:ppn=1:tpp=1">
+	<!ENTITY MEMORIES_CALCINC_GDAS "80000M">
+	<!ENTITY NATIVE_CALCINC_GDAS    "--export=NONE">
 
 	<!ENTITY QUEUE_ANAL_GDAS     "&QUEUE;">
 	<!ENTITY WALLTIME_ANAL_GDAS  "00:29:00">
-	<!ENTITY RESOURCES_ANAL_GDAS "3:ppn=2:tpp=1">
+	<!ENTITY RESOURCES_ANAL_GDAS "4:ppn=24:tpp=1">
 	<!ENTITY MEMORIES_ANAL_GDAS "80000M">
 	<!ENTITY NATIVE_ANAL_GDAS    "--export=NONE">
 
 	<!ENTITY QUEUE_ANAL_ENKF_GDAS     "&QUEUE;">
 	<!ENTITY WALLTIME_ANAL_ENKF_GDAS  "00:29:00">
-	<!ENTITY RESOURCES_ANAL_ENKF_GDAS "3:ppn=2:tpp=1">
+	<!ENTITY RESOURCES_ANAL_ENKF_GDAS "4:ppn=24:tpp=1">
 	<!ENTITY MEMORIES_ANAL_ENKF_GDAS "80000M">
 	<!ENTITY NATIVE_ANAL_ENKF_GDAS    "--export=NONE">
 
 	<!ENTITY QUEUE_FCST_GDAS     "&QUEUE;">
 	<!ENTITY WALLTIME_FCST_GDAS  "00:29:00">
-	<!ENTITY RESOURCES_FCST_GDAS "5:ppn=40:tpp=1">
+	<!ENTITY RESOURCES_FCST_GDAS "9:ppn=40:tpp=1">
 	<!ENTITY NATIVE_FCST_GDAS    "--export=NONE">
 
 	<!ENTITY QUEUE_EFCS_GDAS     "&QUEUE;">
-	<!ENTITY WALLTIME_EFCS_GDAS  "00:29:00">
-	<!ENTITY RESOURCES_EFCS_GDAS "5:ppn=40:tpp=1">
+	<!ENTITY WALLTIME_EFCS_GDAS  "00:39:00">
+	<!ENTITY RESOURCES_EFCS_GDAS "9:ppn=40:tpp=1">
 	<!ENTITY NATIVE_EFCS_GDAS    "--export=NONE">
 
 	<!ENTITY QUEUE_EMEAN_GDAS     "&QUEUE;">
@@ -106,24 +116,101 @@
 	<queue>&QUEUE_HPSS;</queue>
 	<partition>&PARTITION_HPSS;</partition>
 	<walltime>&WALLTIME_HPSS;</walltime>
-	<cores>&RESOURCES_HPSS;</cores>
+	<nodes>&RESOURCES_HPSS;</nodes>
+	<!--
+	<memory>&MEMORIES_HPSS;</memory>
+	-->
+	<native>&NATIVE_HPSS;</native>
 
 	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/retrievemet_v14.log</cyclestr></join>
 
 	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
-	<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+	<envar><name>METRETDIR</name><value>&METRETDIR;</value></envar>
 	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
 	<envar><name>CHGRESHPSSDIR</name><value>&CHGRESHPSSDIR;</value></envar>
 	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
 	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
-	<envar><name>NMEMS</name><value>&NMEMS;</value></envar>
+	<envar><name>NMEMSGRPS</name><value>&NMEMSGRPS;</value></envar>
+	<envar><name>AERODA</name><value>&AERODA;</value></envar>
+	<envar><name>ENSRUN</name><value>&ENSRUN;</value></envar>
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
 	<dependency>
-		<taskdep task="cleandata" cycle_offset="-06:00:00"/>
+		<taskdep task="gdasarch" cycle_offset="-06:00:00"/>
 	</dependency>
 
 </task>
+
+<task name="gdascalcinc" cycledefs="gdas" maxtries="&MAXTRIES;" final="true">
+
+	<command>&JOBS_DIR;/calc_anlinc.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_calcinc_@H</cyclestr></jobname>
+
+	<queue>&QUEUE;</queue>
+	<partition>&PARTITION;</partition>
+	<account>&ACCOUNT;</account>
+	<walltime>&WALLTIME_CALCINC_GDAS;</walltime>
+	<nodes>&RESOURCES_CALCINC_GDAS;</nodes>
+	<memory>&MEMORIES_CALCINC_GDAS;</memory>
+	<native>&NATIVE_CALCINC_GDAS;</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/calcinc.log</cyclestr></join>
+
+	<envar><name>METRETDIR</name><value>&METRETDIR;</value></envar>
+	<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+	<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+	<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+	<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+
+	<dependency>
+		<taskdep task="gdasretrievemet"/>
+	</dependency>
+
+</task>
+
+
+<metatask name="gdasenscalcinc">
+
+	<var name="grp">01 02 03 04 05 06 07 08</var>
+
+	<task name="gdasenscalcinc#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+		<command>&JOBS_DIR;/calc_ensanlinc.sh</command>
+
+		<jobname><cyclestr>&PSLOT;_gdasenscalcinc#grp#_@H</cyclestr></jobname>
+
+		<queue>&QUEUE;</queue>
+		<partition>&PARTITION;</partition>
+		<account>&ACCOUNT;</account>
+		<walltime>&WALLTIME_CALCINC_GDAS;</walltime>
+		<nodes>&RESOURCES_CALCINC_GDAS;</nodes>
+		<memory>&MEMORIES_CALCINC_GDAS;</memory>
+		<native>&NATIVE_CALCINC_GDAS;</native>
+
+		<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasenscalcinc#grp#.log</cyclestr></join>
+
+		<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+		<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+		<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+		<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+		<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+		<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
+		<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>METRETDIR</name><value>&METRETDIR;</value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>ENSGRP</name><value>#grp#</value></envar>
+		<dependency>
+			<taskdep task="gdasretrievemet"/>
+		</dependency>
+	</task>
+
+</metatask>
+
 
 <task name="gdasaeroanlrun" cycledefs="gdas" maxtries="&MAXTRIES;">
 
@@ -156,12 +243,13 @@
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 	<envar><name>OBSDIR</name><value>&OBSDIR;</value></envar>
 	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+	<envar><name>CASE</name><value>&CASE_CNTL;</value></envar>
 	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
 	<envar><name>AODTYPE</name><value>&AODTYPE;</value></envar>
 
 
 	<dependency>
-		<metataskdep metatask="gdasemean" cycle_offset="-06:00:00"/>
+		<taskdep task="gdasarch" cycle_offset="-06:00:00"/>
 	</dependency>
 
 </task>
@@ -202,14 +290,14 @@
 
 
 	<dependency>
-		<taskdep task="gdasaeroanlrun"/>
+		<taskdep task="gdasarch" cycle_offset="-06:00:00"/>
 	</dependency>
 
 </task>
 
 <metatask name="gdasaeroanlrce">
 
-	<var name="grp">01 02 03 04 05 06 07 08 09 10</var>
+	<var name="grp">01 02 03 04 05 06 07 08</var>
 
 	<task name="gdasaeroanlrce#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
 
@@ -247,7 +335,10 @@
 		<envar><name>OBSDIR</name><value>&OBSDIR;</value></envar>
 		<envar><name>AODTYPE</name><value>&AODTYPE;</value></envar>
 		<dependency>
-			<taskdep task="gdasaeroenkfrun"/>
+			<and>
+				<taskdep task="gdasaeroenkfrun"/>
+				<taskdep task="gdasaeroanlrun"/>
+			</and>
 		</dependency>
 	</task>
 
@@ -277,6 +368,7 @@
 	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
 	<envar><name>NET</name><value>&NET;</value></envar>
+	<envar><name>METRETDIR</name><value>&METRETDIR;</value></envar>
 	<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
 	<envar><name>RUN</name><value>&RUN;</value></envar>
 	<envar><name>COMROOT</name><value>&COMROOT;</value></envar>
@@ -288,14 +380,14 @@
 	<dependency>
 		<or>
 			<not><cycleexistdep cycle_offset="-06:00:00"/></not>
-			<metataskdep metatask="gdasaeroanlrce"/>
+			<taskdep task="gdasaeroanlrun"/>
 		</or>
 	</dependency>
 </task>
 
 <metatask name="gdasefmn">
 
-	<var name="grp">01 02 03 04 05 06 07 08 09 10</var>
+	<var name="grp">01 02 03 04 05 06 07 08</var>
 
 	<task name="gdasefcs#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
 
@@ -364,6 +456,7 @@
 		<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
 		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 		<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+		<envar><name>METRETDIR</name><value>&METRETDIR;</value></envar>
 		<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
 		<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
 		<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
@@ -385,4 +478,44 @@
 
 </metatask>
 
+
+<task name="gdasarch" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;" final="true">
+
+	<command>&JOBS_DIR;/arch2hpss_noda.sh</command>
+
+	<jobname><cyclestr>&PSLOT;_gdasarch_@H</cyclestr></jobname>
+	<account>&ACCOUNT;</account>
+	<queue>&QUEUE_HPSS;</queue>
+	<partition>&PARTITION_HPSS;</partition>
+	<walltime>&WALLTIME_HPSS;</walltime>
+	<nodes>&RESOURCES_HPSS;</nodes>
+	<native>&NATIVE_HPSS;</native>
+
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasarch.log</cyclestr></join>
+
+	<envar><name>SDATE</name><value>&SDATE;</value></envar>
+	<envar><name>EDATE</name><value>&EDATE;</value></envar>
+	<envar><name>CASE</name><value>&CASE;</value></envar>
+	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+	<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+	<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
+	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+	<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+	<envar><name>NET</name><value>&NET;</value></envar>
+	<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
+	<envar><name>RUN</name><value>&RUN;</value></envar>
+	<envar><name>COMROOT</name><value>&COMROOT;</value></envar>
+	<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+
+	<dependency>
+		<and>
+			<metataskdep metatask="gdasemean"/>
+			<taskdep task="gdasfcst"/>
+		</and>
+	</dependency>
+</task>
 </workflow>

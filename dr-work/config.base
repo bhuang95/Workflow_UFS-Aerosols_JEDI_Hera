@@ -106,6 +106,7 @@ export assim_freq=6
 export PSLOT=${PSLOT:-"cycExp_ATMA_warm"}
 export EXPDIR=${EXPDIR:-"/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//expdir/$PSLOT"}
 export ROTDIR=${ROTDIR:-"/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/UFSAerosols-workflow/20230123-Jedi3Dvar-Cory/global-workflow//comrot/$PSLOT"}
+export METRETDIR=${METRETDIR:-"${ROTDIR}/RetrieveGDAS/"}
 export ROTDIR_DUMP="YES"                #Note: A value of "NO" does not currently work
 export DUMP_SUFFIX=""
 if [[ "$CDATE" -ge "2019092100" && "$CDATE" -le "2019110700" ]]; then
@@ -245,7 +246,7 @@ fi
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=6 #0
-export FHMAX=9 #9
+export FHMAX=7 #9
 export FHOUT=6 #3           # Will be changed to 1 in config.base if DO_GLDAS is set or (DOHYBVAR set to NO and l4densvar set to false)
 #HBO+
 export FHMIN_ENKF=${FHMIN}
@@ -333,7 +334,7 @@ export DO_JEDIOCNVAR="NO"
 export DOHYBVAR="NO"
 export NMEM_ENKF=40
 export NMEM_EFCS=40
-export NMEM_EFCSGRP=4
+export NMEM_EFCSGRP=5
 export SMOOTH_ENKF="NO"
 export l4densvar=".false."
 export lwrite4danl=".false."

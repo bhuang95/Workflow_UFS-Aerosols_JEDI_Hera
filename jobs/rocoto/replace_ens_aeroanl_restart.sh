@@ -26,7 +26,7 @@ export ENSGRP=${ENSGRP:-"01"}
 export NMEM_EFCSGRP=${NMEM_EFCSGRP:-"2"}
 export REPLACEEXEC=${HOMEgfs}/ush/python/replace_aeroanl_restart.py
 
-ENSED=$((NMEM_EFCSGRP * ${ENSGRP}))
+ENSED=$((${NMEM_EFCSGRP} * 10#${ENSGRP}))
 if [ ${ENSGRP} -eq 1 ]; then
     ENSST=0
 else

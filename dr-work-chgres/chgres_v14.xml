@@ -28,7 +28,7 @@
 	<!ENTITY CASE_ENKF     "C192">
 	<!ENTITY LEVS "128">
 	<!ENTITY NMEM_EFCSGRP "5">
-	<!ENTITY NMEMS "01-40">
+	<!ENTITY NMEMSGRPS "01-40">
 
 
 	<!-- Machine related entities -->
@@ -36,9 +36,9 @@
 	<!ENTITY ACCOUNT_HPSS    "chem-var">
 	<!ENTITY QUEUE_HPSS      "batch">
 	<!ENTITY WALLTIME_HPSS  "01:59:00">
-	<!ENTITY RESOURCES_HPSS "1">
+	<!ENTITY RESOURCES_HPSS "1:ppn=1:tpp=1">
 	<!ENTITY NATIVE_HPSS    "--export=NONE">
-	<!--ENTITY MEMORIES_HPSS "80000M"-->
+	<!ENTITY MEMORIES_HPSS "2048M">
 
 	<!ENTITY PARTITION_CHGRES    "hera">
 	<!ENTITY ACCOUNT_CHGRES    "chem-var">
@@ -68,11 +68,11 @@
 	<queue>&QUEUE_HPSS;</queue>
 	<partition>&PARTITION_HPSS;</partition>
 	<walltime>&WALLTIME_HPSS;</walltime>
-	<cores>&RESOURCES_HPSS;</cores>
+	<nodes>&RESOURCES_HPSS;</nodes>
 	<!--
 	<memory>&MEMORIES_HPSS;</memory>
-	<native>&NATIVE_HPSS;</native>
 	-->
+	<native>&NATIVE_HPSS;</native>
 
 	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/hpss2hera_v14.log</cyclestr></join>
 
@@ -82,7 +82,10 @@
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
 	<dependency>
-		<not><cycleexistdep cycle_offset="-06:00:00"/></not>
+		<or>
+			<not><cycleexistdep cycle_offset="-06:00:00"/></not>
+			<taskdep task="hera2hpss_v14" cycle_offset="-06:00:00"/>
+		</or>
 	</dependency>
 
 </task>
@@ -130,11 +133,11 @@
 	<queue>&QUEUE_HPSS;</queue>
 	<partition>&PARTITION_HPSS;</partition>
 	<walltime>&WALLTIME_HPSS;</walltime>
-	<cores>&RESOURCES_HPSS;</cores>
+	<nodes>&RESOURCES_HPSS;</nodes>
 	<!--
 	<memory>&MEMORIES_HPSS;</memory>
-	<native>&NATIVE_HPSS;</native>
 	-->
+	<native>&NATIVE_HPSS;</native>
 
 	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/hera2hpss_v14.log</cyclestr></join>
 
@@ -144,7 +147,7 @@
 	<envar><name>CHGRESHPSSDIR</name><value>&CHGRESHPSSDIR;</value></envar>
 	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
 	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
-	<envar><name>NMEMS</name><value>&NMEMS;</value></envar>
+	<envar><name>NMEMSGRPS</name><value>&NMEMSGRPS;</value></envar>
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
 

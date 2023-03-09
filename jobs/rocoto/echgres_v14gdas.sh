@@ -23,7 +23,7 @@ export NMEM_EFCSGRP=${NMEM_EFCSGRP:-"5"}
 export CASE_CNTL=${CASE_CNTL:-"C192"}
 export CASE_ENKF=${CASE_ENKF:-"C192"}
 
-ENSED=$((10#${NMEM_EFCSGRP} * 10#${ENSGRP}))
+ENSED=$((${NMEM_EFCSGRP} * 10#${ENSGRP}))
 if [ ${ENSGRP} = "01" ]; then
     ENSST=0
 else

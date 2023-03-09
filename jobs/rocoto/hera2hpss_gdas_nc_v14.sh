@@ -18,7 +18,7 @@ export CHGRESHPSSDIR=${CHGRESHPSSDIR:-"/BMC/fim/5year/MAPP_2018/bhuang//v14/"}
 export CDATE=${CDATE:-"2017110100"}
 export CASE_CNTL=${CASE_CNTL:-"C192"}
 export CASE_ENKF=${CASE_ENKF:-"C192"}
-export NMEMS=${NMEMS:-"01-40"}
+export NMEMSGRPS=${NMEMSGRPS:-"01-40"}
 
 CYMD=${CDATE:0:8}
 CY=${CDATE:0:4}
@@ -53,7 +53,7 @@ cd ${GDASENKFOUT1}
 ERR=$?
 [[ ${ERR} -ne 0 ]] && exit ${ERR}
 TARDIR=${CHGRESHPSSDIR}/ENKFGDAS_NC/${CY}/${CY}${CM}
-TARFILE=enkfgdas.${CDATE}.NC.${NMEMS}.tar
+TARFILE=enkfgdas.${CDATE}.NC.${NMEMSGRPS}.tar
 hsi "mkdir -p ${TARDIR}"
 htar -cv -f ${TARDIR}/${TARFILE} *
 ERR=$?
@@ -73,7 +73,7 @@ cd ${GDASENKFOUT2}
 ERR=$?
 [[ ${ERR} -ne 0 ]] && exit ${ERR}
 TARDIR=${CHGRESHPSSDIR}/ENKFGDAS_CHGRES_NC_${CASE_ENKF}/${CY}/${CY}${CM}
-TARFILE=enkfgdas.${CDATE}.${CASE_ENKF}.NC.${NMEMS}.tar
+TARFILE=enkfgdas.${CDATE}.${CASE_ENKF}.NC.${NMEMSGRPS}.tar
 hsi "mkdir -p ${TARDIR}"
 htar -cv -f ${TARDIR}/${TARFILE} *
 ERR=$?

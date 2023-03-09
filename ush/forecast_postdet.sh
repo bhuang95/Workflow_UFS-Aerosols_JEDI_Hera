@@ -78,7 +78,7 @@ FV3_GFS_postdet(){
       done
 
       # Link sfcanl_data restart files from $memdir
-      for file in $(ls $memdir/RESTART/${sPDY}.${scyc}0000.*.nc); do
+      for file in $(ls $sfcanl/RESTART/${sPDY}.${scyc}0000.*.nc); do
         file2=$(echo $(basename $file))
         file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
         fsufanl=$(echo $file2 | cut -d. -f1)

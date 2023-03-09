@@ -249,6 +249,7 @@ FV3_GFS_predet(){
     memchar=mem$(printf %03i $MEMBER)
   fi
   memdir=$ROTDIR/${prefix}.$PDY/$cyc/atmos/$memchar/
+  sfcanldir=$METRETDIR/${rprefix}.$PDY$cyc/$memchar/
   if [ ! -d $memdir ]; then mkdir -p $memdir; fi
   #HBO+
   COMIN_OBS=${DMPDIR}/${prefix}.${PDY}/$cyc/atmos/$memchar/

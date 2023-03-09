@@ -27,7 +27,7 @@ export NMEM_EFCSGRP=${NMEM_EFCSGRP:-"2"}
 export RECENTEREXEC="${HOMEgfs}/ush/python/recenter_enkf_aeroanl_restart.py"
 export RPLTRCRVARS=${RPLTRCRVARS:-""}
 
-ENSED=$((NMEM_EFCSGRP * ${ENSGRP}))
+ENSED=$((${NMEM_EFCSGRP} * 10#${ENSGRP}))
 ENSST=$((ENSED - NMEM_EFCSGRP + 1))
 
 NCP="/bin/cp -r"
