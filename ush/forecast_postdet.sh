@@ -53,15 +53,21 @@ FV3_GFS_postdet(){
         fsuf=$(echo $file2 | cut -d. -f1)
         #HBO-if [ $fsuf != "sfc_data" ]; then
         if [ $fsuf != "sfc_data" -a $fsuf != "fv_tracer" -a $fsuf != "fv_tracer_aeroanl" -a $fsuf != "fv_tracer_raeroanl" ]; then
+        #if [ $fsuf != "sfc_data" -a $fsuf != *"fv_tracer"* ]; then
           $NLN $file $DATA/INPUT/$file2
         fi
 
       done
 
       # Link fv3_tracer restart files from $memdir
-      if $(ls $gmemdir/RESTART/${sPDY}.${scyc}0000.fv_tracer_raeroanl.*.nc); then
+      #if $(ls $gmemdir/RESTART/${sPDY}.${scyc}0000.fv_tracer_aeroanl.*.nc); then
+      if [ -f $gmemdir/RESTART/${sPDY}.${scyc}0000.fv_tracer_aeroanl.res.tile6.nc ]; then
+          trcr="fv_tracer_aeroanl"
+	  echo "Link aerosol cntl analysis to INPUT directory."
+      #elif $(ls $gmemdir/RESTART/${sPDY}.${scyc}0000.fv_tracer_raeroanl.*.nc); then
+      elif [ -f $gmemdir/RESTART/${sPDY}.${scyc}0000.fv_tracer_raeroanl.res.tile6.nc ]; then
           trcr="fv_tracer_raeroanl"
-	  echo "Link aerosol analysis to INPUT directory."
+	  echo "Link aerosol enkf analysis to INPUT directory."
       else
           trcr="fv_tracer"
 	  echo "Link aerosol background to INPUT directory."
@@ -69,16 +75,16 @@ FV3_GFS_postdet(){
 
       for file in $(ls $gmemdir/RESTART/${sPDY}.${scyc}0000.${trcr}.*.nc); do
           file2=$(echo $(basename $file))
-          file2=$(echo $file2 | cut -d. -f4-) # remove the date from file
-	  file2=fv_tracer.${file2}
+          file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
           fsuf=$(echo $file2 | cut -d. -f1)
           if [ $fsuf = ${trcr} ]; then
+            file2=$(echo $file2 | sed -e "s/${trcr}/fv_tracer/g")
             $NLN $file $DATA/INPUT/$file2
           fi
       done
 
       # Link sfcanl_data restart files from $memdir
-      for file in $(ls $sfcanl/RESTART/${sPDY}.${scyc}0000.*.nc); do
+      for file in $(ls $sfcanldir/RESTART/${sPDY}.${scyc}0000.*.nc); do
         file2=$(echo $(basename $file))
         file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
         fsufanl=$(echo $file2 | cut -d. -f1)
@@ -169,6 +175,13 @@ EOF
       fi
     done
 
+  fi
+
+  if [ ${warm_start} = ".true." -a ${read_increment} = ".false." ]; then
+      echo "warm_start=True, but read_increment=False. Exit now...."
+      echo "If GDAS files are not avaibale in this cycle, 
+            go to WORKFLOWDIR/ush/forecast_postdet.sh and comment out Line 184 and recover later for next cycle... "
+      exit 100
   fi
 
   if [ $machine = 'sandbox' ]; then

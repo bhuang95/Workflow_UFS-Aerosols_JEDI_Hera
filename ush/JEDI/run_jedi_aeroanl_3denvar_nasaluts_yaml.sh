@@ -22,7 +22,7 @@ NPZ=$((LEVS-1))
 LAYOUT=${layout_envar:-"1,1"}
 IO_LAYOUT=${io_layout_envar:-"1,1"}
 BUMPLAYOUT=`echo ${LAYOUT} | sed 's/,/_/g'`
-BUMPDIR=${BUMPDIR:-${JEDIDIR}/fv3-jedi/test/Data/bump/${CASE}/layout-${BUMPLAYOUT}-logp-atmos/}
+BUMPDIR=${BUMPDIR:-${JEDIDIR}/fv3-jedi/test/Data/bump/${CASE}/layout-${BUMPLAYOUT}-${CASE}-logp-atmos/}
 FIELDMETADIR=${JEDIDIR}/fv3-jedi/test/Data/fieldmetadata/
 FV3DIR=${JEDIDIR}/fv3-jedi/test/Data/fv3files/
 ### Hard coded this directory
@@ -77,7 +77,7 @@ ${NCP} ${FIELDMETADIR}/gfs-aerosol.yaml ${DATA}/gfs-aerosol.yaml
 
 # Link bump directory
 mkdir -p ${DATA}/BUMP
-${NLN} ${BUMPDIR}/fv3jedi_bumpparameters_nicas_3D_gfs_C96_logp*  ${DATA}/BUMP/ 
+${NLN} ${BUMPDIR}/fv3jedi_bumpparameters_nicas_3D_gfs*  ${DATA}/BUMP/ 
 
 # Link crtm files (only for VIIRS and MODIS)
 mkdir -p ${DATA}/CRTM/
@@ -270,7 +270,7 @@ BKGERRBLK="
                                mass_fraction_of_sea_salt005_in_air]
             bump:
               io:
-                files prefix: BUMP/fv3jedi_bumpparameters_nicas_3D_gfs_C96_logp
+                files prefix: BUMP/fv3jedi_bumpparameters_nicas_3D_gfs
                 alias:
                 - in code: common
                   in file: fixed_2500km_1.5

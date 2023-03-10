@@ -42,3 +42,7 @@ if __name__ == '__main__':
                     print(vname)
                     indata = infile.variables[vname][:]
                     outfile.variables[vname][:] = indata[:]
+                    try:
+                        outfile.variables[vname].delncattr('checksum')  # remove the checksum so fv3 does not complain
+                    except AttributeError:
+                        pass  # checksum is missing, move on

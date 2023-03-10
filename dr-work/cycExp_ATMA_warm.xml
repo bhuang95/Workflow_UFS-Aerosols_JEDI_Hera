@@ -21,7 +21,9 @@
 
 	<!ENTITY COMROOT "/scratch1/NCEPDEV/global/glopara/com/">
 
-	<!ENTITY MAXTRIES "5">
+	<!ENTITY MAXTRIES "100">
+	<!ENTITY CYCLETHROTTLE "1">
+	<!ENTITY TASKTHROTTLE  "6">
 
 	<!-- Model configuration -->
 	<!ENTITY SDATE "201711010000">
@@ -44,6 +46,9 @@
 	<!ENTITY CHGRESHPSSDIR "/BMC/fim/5year/MAPP_2018/bhuang/UFS-Aerosols-expRuns/GDASCHGRES-V14/">
 	<!ENTITY METRETDIR "&ROTDIR;/RetrieveGDAS/">
 
+	<!-- Archive dir -->
+	<!ENTITY ARCHHPSSDIR "/BMC/fim/5year/MAPP_2018/bhuang/UFS-Aerosols-expRuns//">
+
 	<!-- Run Envrionment -->
 	<!ENTITY RUN_ENVIR "emc">
 
@@ -51,9 +56,8 @@
 	<!-- Machine related entities -->
 	<!ENTITY PARTITION    "hera">
 	<!ENTITY ACCOUNT    "wrf-chem">
-	<!ENTITY QUEUE      "debug">
+	<!ENTITY QUEUE      "batch">
 	<!ENTITY SCHEDULER  "slurm">
-
 
 	<!-- ROCOTO parameters that control workflow -->
 	<!ENTITY PARTITION_HPSS    "service">
@@ -72,14 +76,14 @@
 
 	<!ENTITY QUEUE_ANAL_GDAS     "&QUEUE;">
 	<!ENTITY WALLTIME_ANAL_GDAS  "00:29:00">
-	<!ENTITY RESOURCES_ANAL_GDAS "4:ppn=24:tpp=1">
+	<!ENTITY RESOURCES_ANAL_GDAS "9:ppn=16:tpp=1">
 	<!ENTITY MEMORIES_ANAL_GDAS "80000M">
 	<!ENTITY NATIVE_ANAL_GDAS    "--export=NONE">
 
 	<!ENTITY QUEUE_ANAL_ENKF_GDAS     "&QUEUE;">
-	<!ENTITY WALLTIME_ANAL_ENKF_GDAS  "00:29:00">
-	<!ENTITY RESOURCES_ANAL_ENKF_GDAS "4:ppn=24:tpp=1">
-	<!ENTITY MEMORIES_ANAL_ENKF_GDAS "80000M">
+	<!ENTITY WALLTIME_ANAL_ENKF_GDAS  "00:59:00">
+	<!ENTITY RESOURCES_ANAL_ENKF_GDAS "18:ppn=16:tpp=1">
+	<!ENTITY MEMORIES_ANAL_ENKF_GDAS "100G">
 	<!ENTITY NATIVE_ANAL_ENKF_GDAS    "--export=NONE">
 
 	<!ENTITY QUEUE_FCST_GDAS     "&QUEUE;">
@@ -99,7 +103,7 @@
 
 ]>
 
-<workflow realtime="F" scheduler="slurm" cyclethrottle="3" taskthrottle="25">
+<workflow realtime="F" scheduler="slurm" cyclethrottle="&CYCLETHROTTLE;" taskthrottle="&TASKTHROTTLE;">
 
 	<log verbosity="10"><cyclestr>&ROTDIR;/logs/xmlLog/@Y@m@d@H.log</cyclestr></log>
 
@@ -264,8 +268,8 @@
 	<partition>&PARTITION;</partition>
 	<walltime>&WALLTIME_ANAL_ENKF_GDAS;</walltime>
 	<nodes>&RESOURCES_ANAL_ENKF_GDAS;</nodes>
-	<memory>&MEMORIES_ANAL_ENKF_GDAS;</memory>
 	<native>&NATIVE_ANAL_ENKF_GDAS;</native>
+	<memory>&MEMORIES_ANAL_ENKF_GDAS;</memory>
 
 	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasaeroenkfrun.log</cyclestr></join>
 

@@ -188,6 +188,7 @@ if [ $esmf_profile ]; then
   export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 fi
 
+
 if [ $machine != 'sandbox' ]; then
   $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
   export OMP_NUM_THREADS=$NTHREADS_FV3

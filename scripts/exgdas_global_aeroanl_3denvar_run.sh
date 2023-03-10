@@ -100,6 +100,7 @@ $JEDIUSH/run_jedi_aeroanl_3denvar_nasaluts_yaml.sh
 source ${HOMEjedi}/jedi_module_base.hera.sh
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEjedi}/lib/"
 export OMP_NUM_THREADS=1
+ulimit -s unlimited
 
 echo $LD_LIBRARY_PATH
 

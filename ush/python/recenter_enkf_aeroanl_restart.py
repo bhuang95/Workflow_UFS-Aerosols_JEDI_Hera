@@ -81,3 +81,11 @@ if __name__ == '__main__':
                                 rcedata[rcedata < 0.0] = 0.0
                                 rplensfile.variables[vname][:] = jedidata[:]
                                 rceensfile.variables[vname][:] = rcedata[:]
+                                try:
+                                    rplensfile.variables[vname].delncattr('checksum')  # remove the checksum so fv3 does not complain
+                                except AttributeError:
+                                    pass  # checksum is missing, move on
+                                try:
+                                    rceensfile.variables[vname].delncattr('checksum')  # remove the checksum so fv3 does not complain
+                                except AttributeError:
+                                    pass  # checksum is missing, move on
