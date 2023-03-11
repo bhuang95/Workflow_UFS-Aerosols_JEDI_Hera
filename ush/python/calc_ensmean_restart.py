@@ -56,7 +56,7 @@ if __name__ == '__main__':
                     else:
                         mdata += edata/nens
                     meanfile.variables[vname][:] = mdata[:]
-                    try:
-                        meanfile.variables[vname].delncattr('checksum')  # remove the checksum so fv3 does not complain
-                    except AttributeError:
-                        pass  # checksum is missing, move on
+#                    try:
+#                        meanfile.variables[vname].delncattr('checksum')  # remove the checksum so fv3 does not complain
+#                    except AttributeError:
+#                        pass  # checksum is missing, move on

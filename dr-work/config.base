@@ -332,9 +332,9 @@ export DO_JEDIOCNVAR="NO"
 
 # Hybrid related
 export DOHYBVAR="NO"
-export NMEM_ENKF=40
-export NMEM_EFCS=40
-export NMEM_EFCSGRP=5
+export NMEM_ENKF=${NMEM_ENKF:-"40"}
+export NMEM_EFCS=${NMEM_ENKF:-"40"}
+export NMEM_EFCSGRP=${NMEM_EFCSGRP:-"5"}
 export SMOOTH_ENKF="NO"
 export l4densvar=".false."
 export lwrite4danl=".false."

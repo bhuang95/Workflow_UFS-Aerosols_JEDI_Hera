@@ -34,6 +34,8 @@
 	<!ENTITY CASE     "C192">
 	<!ENTITY CASE_CNTL     "&CASE;">
 	<!ENTITY CASE_ENKF     "C192">
+	<!ENTITY NMEM_ENKF     "40">
+	<!ENTITY NMEM_EFCSGRP     "5">
 
 	<!-- JEDI configuration -->
 	<!ENTITY OBSDIR     "/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/ViirsAod/C192/">
@@ -47,7 +49,7 @@
 	<!ENTITY METRETDIR "&ROTDIR;/RetrieveGDAS/">
 
 	<!-- Archive dir -->
-	<!ENTITY ARCHHPSSDIR "/BMC/fim/5year/MAPP_2018/bhuang/UFS-Aerosols-expRuns//">
+	<!ENTITY ARCHHPSSDIR "/BMC/fim/5year/MAPP_2018/bhuang/UFS-Aerosols-expRuns/">
 
 	<!-- Run Envrionment -->
 	<!ENTITY RUN_ENVIR "emc">
@@ -499,19 +501,22 @@
 
 	<envar><name>SDATE</name><value>&SDATE;</value></envar>
 	<envar><name>EDATE</name><value>&EDATE;</value></envar>
+	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>CASE</name><value>&CASE;</value></envar>
 	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+	<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
 	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 	<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
-	<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
 	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+	<envar><name>ARCHHPSSDIR</name><value>&ARCHHPSSDIR;</value></envar>
+	<envar><name>ACCOUNT_HPSS</name><value>&ACCOUNT_HPSS;</value></envar>
 	<envar><name>NET</name><value>&NET;</value></envar>
 	<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
 	<envar><name>RUN</name><value>&RUN;</value></envar>
 	<envar><name>COMROOT</name><value>&COMROOT;</value></envar>
 	<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
-	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 	<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 
