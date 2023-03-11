@@ -86,6 +86,7 @@ NLN="/bin/ln -sf"
 cd $DATA
 ${NRM} atmges_mem001 atmanl_mem001 atminc_mem001 calc_increment.nml
 ${NCP} $CALCINCNCEXEC ./calc_inc.x
+export OMP_NUM_THREADS=$NTHREADS_CALCINC
 
 mkdir -p $ROTDIR/${CDUMP}.${CYMD}/${CH}/${COMPONENT}/
 BKGFILE=${ROTDIR}/${CDUMP}.${GYMD}/${GH}/${COMPONENT}/${CDUMP}.t${GH}z.atmf${FHR}.nc 
@@ -113,7 +114,6 @@ EOF
 
 cat calc_increment.nml
 
-export OMP_NUM_THREADS=$NTHREADS_CALCINC
 srun --export=all -n ${ncmd} ./calc_inc.x
 ERR=$?
 if [[ $ERR != 0 ]]; then
@@ -122,12 +122,12 @@ fi
 #export ERR=$rc
 #export err=$ERR
 #$ERRSCRIPT || exit 3
-unlink atmges_mem001
-unlink atmanl_mem001
-unlink atminc_mem001
+#unlink atmges_mem001
+##unlink atmanl_mem001
+#unlink atminc_mem001
 
-#set +x 
-#rm -rf ${DATA}/calcinc.$$
+set +x 
+rm -rf ${DATA}/calcinc.$$
 exit ${ERR}
 ###############################################################
 

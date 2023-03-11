@@ -133,10 +133,8 @@ EOF
     IMEM=$((IMEM+1))
 done
 
-    
-
-#set +x 
-#rm -rf ${DATA}/calcinc.$$
+set +x 
+rm -rf ${DATA}/calcensinc.$$
 exit ${ERR}
 ###############################################################
 

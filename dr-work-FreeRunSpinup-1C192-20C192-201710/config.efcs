@@ -1,0 +1,83 @@
+#! /usr/bin/env bash
+
+########## config.efcs ##########
+# Ensemble forecast specific, dependency: config.fcst
+
+echo "BEGIN: config.efcs"
+
+# Source model specific information that is resolution dependent
+. $EXPDIR/config.fv3 $CASE_ENKF
+
+# Get task specific resources
+. $EXPDIR/config.resources efcs
+
+export npe_fv3=$npe_efcs
+
+if [ $QUILTING = ".true." ]; then
+    export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
+    export npe_efcs=$npe_fv3
+fi
+
+# Use serial I/O for ensemble (lustre?)
+export OUTPUT_FILETYPE_ATM="netcdf"
+export OUTPUT_FILETYPE_SFC="netcdf"
+
+# Number of enkf members per fcst job
+#export NMEM_EFCSGRP=2
+export NMEM_EFCSGRP_GFS=1
+export RERUN_EFCSGRP="NO"
+
+# Turn off inline UPP for EnKF forecast
+export WRITE_DOPOST=".false."
+
+# Stochastic physics parameters (only for ensemble forecasts)
+#HBO#export DO_SKEB="YES"
+export DO_SKEB="YES"
+export SKEB=0.3
+export SKEB_TAU=21600.
+export SKEB_LSCALE=250000.
+export SKEBNORM=0
+export SKEB_NPASS=30
+export SKEB_VDOF=5
+#HBO#export DO_SHUM="YES"
+export DO_SHUM="YES"
+export SHUM=0.005
+export SHUM_TAU=21600.
+export SHUM_LSCALE=500000.
+#HBO#export DO_SPPT="YES"
+export DO_SPPT="YES"
+export SPPT=0.5
+export SPPT_TAU=21600.
+export SPPT_LSCALE=500000.
+export SPPT_LOGIT=".true."
+export SPPT_SFCLIMIT=".true."
+
+if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
+else
+    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
+fi
+
+# FV3 model namelist parameters to over-ride
+export restart_interval=${restart_interval:-6}
+
+# For IAU, write restarts at beginning of window also
+if [ $DOIAU_ENKF = "YES" ]; then
+    export restart_interval="3 -1"
+fi
+
+# wave model
+export cplwav=.false.
+
+# ocean model resolution
+case "$CASE_ENKF" in
+    "C48") export OCNRES=500;;
+    "C96") export OCNRES=100;;
+    "C192") export OCNRES=050;;
+    "C384") export OCNRES=025;;
+    "C768") export OCNRES=025;;
+    *) export OCNRES=025;;
+esac
+export ICERES=$OCNRES
+
+echo "END: config.efcs"

@@ -90,9 +90,14 @@ for TILEFILE in ${TILEFILES}; do
     
     ${NMV} ensmean.${TILEFILE}  ${FENSMEANRTDIR}/${ANLPREFIX}.${TILEFILE}
 done
-    if [ ${ITILE} -eq 1 ]; then
-        ${NCP} ${FENSDIR}/${COMPONENT}/mem001/RESTART/${ANLPREFIX}.coupler.res ${FENSMEANRTDIR}/
-        ${NCP} ${FENSDIR}/${COMPONENT}/mem001/RESTART/${ANLPREFIX}.fv_core.res.nc ${FENSMEANRTDIR}/
-    fi
+
+if [ ${ITILE} -eq 1 ]; then
+    ${NCP} ${FENSDIR}/${COMPONENT}/mem001/RESTART/${ANLPREFIX}.coupler.res ${FENSMEANRTDIR}/
+    ${NCP} ${FENSDIR}/${COMPONENT}/mem001/RESTART/${ANLPREFIX}.fv_core.res.nc ${FENSMEANRTDIR}/
+    ERR=$?
+    [[ ${ERR} -ne 0 ]] && exit ${ERR}
+fi
+
+rm -rf ${DATA}
 
 exit 0

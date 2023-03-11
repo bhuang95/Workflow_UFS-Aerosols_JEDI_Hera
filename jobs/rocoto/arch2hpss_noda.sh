@@ -27,7 +27,7 @@ for config in $configs; do
 done
 
 HERA2HPSSDIR=${ROTDIR}/HERA2HPSS/${CDATE}
-HPSSRECORD=${ROTDIR}/HERA2HPSS/hera2hpss.failed
+HPSSRECORD=${ROTDIR}/HERA2HPSS/record_hera2hpss.failed
 mkdir -p ${HERA2HPSSDIR}
 
 cat > ${HERA2HPSSDIR}/job_hpss_${CDATE}.sh << EOF
@@ -182,6 +182,10 @@ if [ -s \${cntlGDAS} ]; then
 #        fi
         
         # Tar ensemble files to HPSS
+        IGRP=0
+	LGRP_atmos=\${tmpDir}/list.atmos.grp\${IGRP}
+	[[ -f \${LGRP_atmos} ]] && rm -rf \${LGRP_atmos}
+	echo "ensmean" > \${LGRP_atmos}
         IGRP=1
         while [ \${IGRP} -le \${NGRPS} ]; do
             ENSED=\$((\${NMEM_GRP} * 10#\${IGRP}))
@@ -192,9 +196,9 @@ if [ -s \${cntlGDAS} ]; then
 	    [[ -f \${LGRP_atmos} ]] && rm -rf \${LGRP_atmos}
 	    [[ -f \${LGRP_chem} ]] && rm -rf \${LGRP_chem}
 
-	    if [ \${IGRP} -ep 1 ]; then
-		echo "ensmean" > \${LGRP_atmos}
-	    fi
+	    #if [ \${IGRP} -eq 1 ]; then
+	    #	echo "ensmean" > \${LGRP_atmos}
+	    #fi
 
 	    IMEM=\${ENSST}
 	    while [ \${IMEM} -le \${ENSED} ]; do
@@ -206,9 +210,13 @@ if [ -s \${cntlGDAS} ]; then
 	    IGRP=\$((IGRP+1))
 	done
 
-	IGRP=1
+	IGRP=0
 	while [ \${IGRP} -le \${NGRPS} ]; do
-	    TARFILE=enkfgdas.\${cycN}.atmos.grp\${IGRP}
+	    if [ \${IGRP} -eq 0 ]; then
+	        TARFILE=enkfgdas.\${cycN}.atmos.ensmean
+	    else
+	        TARFILE=enkfgdas.\${cycN}.atmos.grp\${IGRP}
+	    fi
 	    LGRP=\${tmpDir}/list.atmos.grp\${IGRP}
 	    cd \${enkfGDAS_atmos}
 	    htar -P -cvf \${hpssExpDir}/\${TARFILE}  \$(cat \${LGRP})
@@ -222,27 +230,31 @@ if [ -s \${cntlGDAS} ]; then
   	        echo "HTAR at enkfgdas.\${cycN} completed !"
   	    fi
 
-	    TARFILE=enkfgdas.\${cycN}.chem.grp\${IGRP}
-	    LGRP=\${tmpDir}/list.chem.grp\${IGRP}
-	    cd \${enkfGDAS_chem}
-	    htar -P -cvf \${hpssExpDir}/\${TARFILE}  \$(cat \${LGRP})
-	    ERR=\$?
-	    echo \${ERR}
-	    if [ \${ERR} -ne 0 ]; then
-	        echo "HTAR failed at enkfgdas.\${cycN} and grp\${IGRP} and exit at error code \${ERR}"
-          	echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}
-	    	exit \${ERR}
-  	    else
-  	        echo "HTAR at enkfgdas.\${cycN} completed !"
-  	     fi
+
+
+	    if [ \${IGRP} -ge 1 ]; then
+	        TARFILE=enkfgdas.\${cycN}.chem.grp\${IGRP}
+	        LGRP=\${tmpDir}/list.chem.grp\${IGRP}
+	        cd \${enkfGDAS_chem}
+	        htar -P -cvf \${hpssExpDir}/\${TARFILE}  \$(cat \${LGRP})
+	        ERR=\$?
+	        echo \${ERR}
+	        if [ \${ERR} -ne 0 ]; then
+	            echo "HTAR failed at enkfgdas.\${cycN} and grp\${IGRP} and exit at error code \${ERR}"
+          	    echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}
+	            exit \${ERR}
+  	        else
+  	            echo "HTAR at enkfgdas.\${cycN} completed !"
+  	         fi
+             fi
              IGRP=\$((IGRP+1))
 	done
     fi #End of EnKF
 
     if [ \${ERR} -eq 0 ]; then
         echo "HTAR is successful at \${cycN}"
-	#/bin/rm -rf \${enkfGDAS}
-	#/bin/rm -rf \${cntlGDAS}
+	/bin/rm -rf \${enkfGDAS}
+	/bin/rm -rf \${cntlGDAS}
     else
         echo "HTAR failed at \${cycN}"
         echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}
@@ -254,8 +266,8 @@ fi
 exit 0
 EOF
 
-#cd ${HERA2HPSSDIR}
-#sbatch job_hpss_${CDATE}.sh
+cd ${HERA2HPSSDIR}
+sbatch job_hpss_${CDATE}.sh
 ERR=$?
 
 #sleep 60
