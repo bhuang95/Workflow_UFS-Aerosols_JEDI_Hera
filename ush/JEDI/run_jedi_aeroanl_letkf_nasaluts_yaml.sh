@@ -60,7 +60,7 @@ mkdir -p ${DATAINPUT}
 ${NCP} ${FV3DIR}/fmsmpp.nml 		${DATA}/fmsmpp.nml
 ${NCP} ${FV3DIR}/field_table_gfdl 	${DATA}/field_table_gfdl
 ${NCP} ${FV3DIR}/akbk${NPZ}.nc4 		${DATAINPUT}/akbk.nc
-${NCP} ${FIELDMETADIR}/gfs-aerosol.yaml ${DATA}/gfs-aerosol.yaml
+${NCP} ${FIELDMETADIR}/ufs-aerosol.yaml ${DATA}/ufs-aerosol.yaml
 
 # Link crtm files (only for VIIRS and MODIS)
 mkdir -p ${DATA}/CRTM/
@@ -197,7 +197,8 @@ background:
       state variables: &aerovars [T,delp,sphum,
                                   so4,bc1,bc2,oc1,oc2,
                                   dust1,dust2,dust3,dust4,dust5,
-                                  seas1,seas2,seas3,seas4,seas5]
+                                  seas1,seas2,seas3,seas4,seas5,
+                                  no3an1,no3an2,no3an3]
       datapath: INPUT/mem%mem%/
       filename_core: ${ANLPREFIX}.fv_core.res.nc
       filename_trcr: ${ANLPREFIX}.fv_tracer.res.nc
@@ -232,7 +233,7 @@ observations:
         Sensor_ID: ${SENSORID}
         EndianType: little_endian
         CoefficientPath: ./CRTM/
-        AerosolOption: aerosols_gocart_1
+        AerosolOption: aerosols_gocart_2
         RCFile: geosaod.rc
         model units coeff: 1.e-9
     obs error:
@@ -256,7 +257,7 @@ geometry:
   npy: ${NPY}
   npz: ${NPZ}
   ntiles: 6
-  field metadata override: gfs-aerosol.yaml
+  field metadata override: ufs-aerosol.yaml
 
 window begin: &date '${STWINFMT}'
 window length: PT6H

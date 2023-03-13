@@ -616,7 +616,7 @@ data_out_GFS() {
           rPDY=$(echo $RDATE | cut -c1-8)
           rcyc=$(echo $RDATE | cut -c9-10)
           for file in $(ls ${rPDY}.${rcyc}0000.*) ; do
-            $NCP $file $memdir/RESTART/$file
+            $NMV $file $memdir/RESTART/$file
           done
         fi
       done

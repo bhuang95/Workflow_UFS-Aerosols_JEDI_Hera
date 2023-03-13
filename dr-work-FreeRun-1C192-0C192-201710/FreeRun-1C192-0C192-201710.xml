@@ -8,40 +8,42 @@
 	NOTES:
 		This workflow was automatically generated at 2023-01-27 18:29:13.198072
 	-->
-	<!ENTITY PSLOT "cycExp_ATMA_warm">
+	<!ENTITY PSLOT "FreeRun-1C192-0C192-201710">
+	<!--HOMEgfs is the top direcotry of the workflow and independent from PSLOT defined as a specific experiment name-->
 	<!ENTITY HOMEgfs "/home/Bo.Huang/JEDI-2020/expRuns/exp_UFS-Aerosols/cycExp_ATMA_warm/">
-	<!ENTITY HOMEjedi "/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/MISC/codeDev/JEDI/jedi-bundle/20230113/build/">
+	<!ENTITY HOMEjedi "/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/fv3-bundle/V20230312/build">
 	<!ENTITY TOPRUNDIR "/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/">
 	<!ENTITY JOBS_DIR "&HOMEgfs;/jobs/rocoto">
 
 	<!-- Experiment and Rotation directory -->
-	<!ENTITY EXPDIR "&HOMEgfs;/dr-work/">
+	<!-- dr-work in EXPDIR should correspond to a specific expeiment inside HOMEgfs-->
+	<!ENTITY EXPDIR "&HOMEgfs;/dr-work-&PSLOT;/">
 	<!ENTITY ROTDIR "&TOPRUNDIR;/&PSLOT;/dr-data">
+	<!ENTITY OBSDIR "/scratch1/BMC/gsd-fv3-dev/MAPP_2018/pagowski/DATA/OBS/VIIRS/thinned_debiased_C192/">
 	<!ENTITY DATAROOTTOP "/scratch2/BMC/gsd-fv3-dev/NCEPDEV/stmp3/Bo.Huang/RUNDIRS/&PSLOT;/">
 
 	<!ENTITY COMROOT "/scratch1/NCEPDEV/global/glopara/com/">
 
-	<!ENTITY MAXTRIES "100">
+	<!ENTITY MAXTRIES "10">
 	<!ENTITY CYCLETHROTTLE "1">
-	<!ENTITY TASKTHROTTLE  "6">
+	<!ENTITY TASKTHROTTLE  "20">
 
 	<!-- Model configuration -->
-	<!ENTITY SDATE "201711010000">
-	<!ENTITY EDATE "201711010600">
+	<!ENTITY SDATE "201710060000">
+	<!ENTITY EDATE "201710151800">
 	<!ENTITY NET "gfs">
 	<!ENTITY CDUMP "gdas">
 	<!ENTITY RUN "gdas">
 	<!ENTITY CASE     "C192">
 	<!ENTITY CASE_CNTL     "&CASE;">
 	<!ENTITY CASE_ENKF     "C192">
-	<!ENTITY NMEM_ENKF     "40">
-	<!ENTITY NMEM_EFCSGRP     "5">
+	<!ENTITY NMEM_ENKF     "20">
+	<!ENTITY NMEM_EFCSGRP     "2">
 
 	<!-- JEDI configuration -->
-	<!ENTITY OBSDIR     "/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/ViirsAod/C192/">
-	<!ENTITY AODTYPE "VIIRS">
-	<!ENTITY AERODA "TRUE">
-	<!ENTITY ENSRUN "TRUE">
+	<!ENTITY AODTYPE "NOAA_VIIRS">
+	<!ENTITY AERODA "FALSE">
+	<!ENTITY ENSRUN "FALSE">
 
 	<!-- Retrieve Met -->
 	<!ENTITY NMEMSGRPS "01-40">
@@ -58,14 +60,14 @@
 	<!-- Machine related entities -->
 	<!ENTITY PARTITION    "hera">
 	<!ENTITY ACCOUNT    "wrf-chem">
-	<!ENTITY QUEUE      "debug">
+	<!ENTITY QUEUE      "hera">
 	<!ENTITY SCHEDULER  "slurm">
 
 	<!-- ROCOTO parameters that control workflow -->
 	<!ENTITY PARTITION_HPSS    "service">
 	<!ENTITY ACCOUNT_HPSS    "chem-var">
 	<!ENTITY QUEUE_HPSS      "batch">
-	<!ENTITY WALLTIME_HPSS  "01:59:00">
+	<!ENTITY WALLTIME_HPSS  "07:59:00">
 	<!ENTITY RESOURCES_HPSS "1:ppn=1:tpp=1">
 	<!ENTITY MEMORIES_HPSS "80000M">
 	<!ENTITY NATIVE_HPSS    "--export=NONE">
@@ -82,6 +84,12 @@
 	<!ENTITY MEMORIES_ANAL_GDAS "80000M">
 	<!ENTITY NATIVE_ANAL_GDAS    "--export=NONE">
 
+	<!ENTITY QUEUE_DIAG_GDAS     "&QUEUE;">
+	<!ENTITY WALLTIME_DIAG_GDAS  "00:29:00">
+	<!ENTITY RESOURCES_DIAG_GDAS "4:ppn=12:tpp=1">
+	<!ENTITY MEMORIES_DIAG_GDAS "100G">
+	<!ENTITY NATIVE_DIAG_GDAS    "--export=NONE">
+
 	<!ENTITY QUEUE_ANAL_ENKF_GDAS     "&QUEUE;">
 	<!ENTITY WALLTIME_ANAL_ENKF_GDAS  "00:59:00">
 	<!ENTITY RESOURCES_ANAL_ENKF_GDAS "18:ppn=16:tpp=1">
@@ -94,7 +102,7 @@
 	<!ENTITY NATIVE_FCST_GDAS    "--export=NONE">
 
 	<!ENTITY QUEUE_EFCS_GDAS     "&QUEUE;">
-	<!ENTITY WALLTIME_EFCS_GDAS  "00:39:00">
+	<!ENTITY WALLTIME_EFCS_GDAS  "00:29:00">
 	<!ENTITY RESOURCES_EFCS_GDAS "9:ppn=40:tpp=1">
 	<!ENTITY NATIVE_EFCS_GDAS    "--export=NONE">
 
@@ -113,7 +121,7 @@
 	<cycledef group="gdas_half">&SDATE; &EDATE; 06:00:00</cycledef>
 	<cycledef group="gdas">&SDATE; &EDATE; 06:00:00</cycledef>
 
-<task name="gdasretrievemet" cycledefs="gdas" maxtries="&MAXTRIES;" final="true">
+<task name="gdasretrievemet" cycledefs="gdas" maxtries="&MAXTRIES;">
 
 	<command>&JOBS_DIR;/retrieve_gdaschgres_v14.sh</command>
 
@@ -137,17 +145,22 @@
 	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
 	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
 	<envar><name>NMEMSGRPS</name><value>&NMEMSGRPS;</value></envar>
+	<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
+	<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
 	<envar><name>AERODA</name><value>&AERODA;</value></envar>
 	<envar><name>ENSRUN</name><value>&ENSRUN;</value></envar>
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
 	<dependency>
-		<taskdep task="gdasarch" cycle_offset="-06:00:00"/>
+		<or>
+			<taskdep task="gdasarch" cycle_offset="-06:00:00"/>
+			<not><cycleexistdep cycle_offset="-06:00:00"/></not>
+		</or>
 	</dependency>
 
 </task>
 
-<task name="gdascalcinc" cycledefs="gdas" maxtries="&MAXTRIES;" final="true">
+<task name="gdascalcinc" cycledefs="gdas" maxtries="&MAXTRIES;">
 
 	<command>&JOBS_DIR;/calc_anlinc.sh</command>
 
@@ -170,6 +183,8 @@
 	<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
 	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
 	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+	<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
+	<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
 	<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
 	<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 
@@ -180,9 +195,10 @@
 </task>
 
 
+<!--
 <metatask name="gdasenscalcinc">
 
-	<var name="grp">01 02 03 04 05 06 07 08</var>
+	<var name="grp">01 02 03 04 05 06 07 08 09 10</var>
 
 	<task name="gdasenscalcinc#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
 
@@ -205,6 +221,10 @@
 		<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
 		<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
 		<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+		<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+		<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+		<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
+		<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
 		<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
 		<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>METRETDIR</name><value>&METRETDIR;</value></envar>
@@ -216,8 +236,9 @@
 	</task>
 
 </metatask>
+-->
 
-
+<!--
 <task name="gdasaeroanlrun" cycledefs="gdas" maxtries="&MAXTRIES;">
 
 	<command>&JOBS_DIR;/aeroanlrun.sh</command>
@@ -239,6 +260,10 @@
 	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
 	<envar><name>HOMEjedi</name><value>&HOMEjedi;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+	<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
+	<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
 	<envar><name>NET</name><value>&NET;</value></envar>
 	<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
 	<envar><name>RUN</name><value>&RUN;</value></envar>
@@ -259,7 +284,9 @@
 	</dependency>
 
 </task>
+-->
 
+<!--
 <task name="gdasaeroenkfrun" cycledefs="gdas" maxtries="&MAXTRIES;">
 
 	<command>&JOBS_DIR;/aeroanlenkf.sh</command>
@@ -281,6 +308,10 @@
 	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
 	<envar><name>HOMEjedi</name><value>&HOMEjedi;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+	<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
+	<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
 	<envar><name>NET</name><value>&NET;</value></envar>
 	<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
 	<envar><name>RUN</name><value>&RUN;</value></envar>
@@ -300,7 +331,9 @@
 	</dependency>
 
 </task>
+-->
 
+<!--
 <metatask name="gdasaeroanlrce">
 
 	<var name="grp">01 02 03 04 05 06 07 08</var>
@@ -324,6 +357,8 @@
 		<envar><name>CASE</name><value>&CASE;</value></envar>
 		<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
 		<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+		<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
+		<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
 		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 		<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
 		<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
@@ -349,6 +384,61 @@
 	</task>
 
 </metatask>
+-->
+
+<metatask name="gdasaerodiag">
+
+	<var name="grp">01</var>
+
+	<task name="gdasaerodiag#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
+
+		<command>&JOBS_DIR;/hofx_nomodel.sh</command>
+
+		<jobname><cyclestr>&PSLOT;_gdasaerodiag#grp#_@H</cyclestr></jobname>
+		<account>&ACCOUNT;</account>
+		<queue>&QUEUE_DIAG_GDAS;</queue>
+		<partition>&PARTITION;</partition>
+		<walltime>&WALLTIME_DIAG_GDAS;</walltime>
+		<nodes>&RESOURCES_DIAG_GDAS;</nodes>
+		<native>&NATIVE_DIAG_GDAS;</native>
+
+		<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdasaerodiag#grp#.log</cyclestr></join>
+
+		<envar><name>SDATE</name><value>&SDATE;</value></envar>
+		<envar><name>EDATE</name><value>&EDATE;</value></envar>
+		<envar><name>CASE</name><value>&CASE;</value></envar>
+		<envar><name>AODTYPE</name><value>&AODTYPE;</value></envar>
+		<envar><name>OBSDIR</name><value>&OBSDIR;</value></envar>
+		<envar><name>ENSRUN</name><value>&ENSRUN;</value></envar>
+		<envar><name>AERODA</name><value>&AERODA;</value></envar>
+		<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
+		<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+		<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
+		<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
+		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
+		<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
+		<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
+		<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+	        <envar><name>HOMEjedi</name><value>&HOMEjedi;</value></envar>
+		<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+		<envar><name>NET</name><value>&NET;</value></envar>
+		<envar><name>CDUMP</name><value>&CDUMP;</value></envar>
+		<envar><name>RUN</name><value>&RUN;</value></envar>
+		<envar><name>COMROOT</name><value>&COMROOT;</value></envar>
+		<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+		<envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+		<envar><name>ENSGRP</name><value>#grp#</value></envar>
+		<dependency>
+			<or>
+				<not><cycleexistdep cycle_offset="-06:00:00"/></not>
+				<taskdep task="gdasarch" cycle_offset="-06:00:00"/>
+			</or>
+		</dependency>
+	</task>
+
+</metatask>
 
 <task name="gdasfcst" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
 
@@ -366,8 +456,10 @@
 
 	<envar><name>SDATE</name><value>&SDATE;</value></envar>
 	<envar><name>EDATE</name><value>&EDATE;</value></envar>
-	<envar><name>CASE</name><value>&CASE;</value></envar>
+	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
 	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+	<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
+	<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
 	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 	<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
 	<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
@@ -385,15 +477,15 @@
 
 	<dependency>
 		<or>
-			<not><cycleexistdep cycle_offset="-06:00:00"/></not>
-			<taskdep task="gdasaeroanlrun"/>
+			<taskdep task="gdascalcinc"/>
 		</or>
 	</dependency>
 </task>
 
+<!--
 <metatask name="gdasefmn">
 
-	<var name="grp">01 02 03 04 05 06 07 08</var>
+	<var name="grp">01 02 03 04 05 06 07 08 09 10</var>
 
 	<task name="gdasefcs#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
 
@@ -412,7 +504,10 @@
 		<envar><name>SDATE</name><value>&SDATE;</value></envar>
 		<envar><name>EDATE</name><value>&EDATE;</value></envar>
 		<envar><name>CASE</name><value>&CASE;</value></envar>
+		<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
 		<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+		<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
+		<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
 		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 		<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
 		<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
@@ -430,13 +525,16 @@
 		<dependency>
 			<or>
 				<not><cycleexistdep cycle_offset="-06:00:00"/></not>
+				<metataskdep metatask="gdasenscalcinc"/>
 				<metataskdep metatask="gdasaeroanlrce"/>
 			</or>
 		</dependency>
 	</task>
 
 </metatask>
+-->
 
+<!--
 <metatask name="gdasemean">
 
 	<var name="itile">1 2 3 4 5 6</var>
@@ -460,6 +558,8 @@
 		<envar><name>CASE</name><value>&CASE;</value></envar>
 		<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
 		<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+		<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
+		<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
 		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 		<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
 		<envar><name>METRETDIR</name><value>&METRETDIR;</value></envar>
@@ -483,7 +583,7 @@
 	</task>
 
 </metatask>
-
+-->
 
 <task name="gdasarch" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;" final="true">
 
@@ -506,6 +606,9 @@
 	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
 	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
 	<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
+	<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
+	<envar><name>ENSRUN</name><value>&ENSRUN;</value></envar>
+	<envar><name>AERODA</name><value>&AERODA;</value></envar>
 	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 	<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
 	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
@@ -522,8 +625,8 @@
 
 	<dependency>
 		<and>
-			<metataskdep metatask="gdasemean"/>
 			<taskdep task="gdasfcst"/>
+			<metataskdep metatask="gdasaerodiag"/>
 		</and>
 	</dependency>
 </task>

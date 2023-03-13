@@ -109,7 +109,7 @@ ERR=$?
 
 if [ ${ERR} -ne 0 ]; then
    echo "JEDI 3denvar failed and exit the program!!!"
-   exit 1
+   exit ${ERR}
 fi
 
 # we need to now do some ncks things on the deterministic run

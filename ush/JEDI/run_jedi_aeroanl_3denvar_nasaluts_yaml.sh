@@ -72,7 +72,7 @@ mkdir -p ${DATAINPUT}
 ${NCP} ${FV3DIR}/fmsmpp.nml 		${DATA}/fmsmpp.nml
 ${NCP} ${FV3DIR}/field_table_gfdl 	${DATA}/field_table_gfdl
 ${NCP} ${FV3DIR}/akbk${NPZ}.nc4 		${DATAINPUT}/akbk.nc
-${NCP} ${FIELDMETADIR}/gfs-aerosol.yaml ${DATA}/gfs-aerosol.yaml
+${NCP} ${FIELDMETADIR}/ufs-aerosol.yaml ${DATA}/ufs-aerosol.yaml
 
 
 # Link bump directory
@@ -220,7 +220,8 @@ BKGBLK="
     state variables: [T,delp,sphum,
                       so4,bc1,bc2,oc1,oc2,
                       dust1,dust2,dust3,dust4,dust5,
-                      seas1,seas2,seas3,seas4,seas5]
+                      seas1,seas2,seas3,seas4,seas5,
+                      no3an1,no3an2,no3an3]
 "
 
 # Generate background erro yaml block
@@ -242,7 +243,8 @@ BKGERRBLK="
             filetype: fms restart
             state variables: &aerovars [so4,bc1,bc2,oc1,oc2,
                                         dust1,dust2,dust3,dust4,dust5,
-                                        seas1,seas2,seas3,seas4,seas5]
+                                        seas1,seas2,seas3,seas4,seas5,
+                                        no3an1,no3an2,no3an3]
             datapath: INPUT/mem%mem%/
             filename_trcr: ${ANLPREFIX}.fv_tracer.res.nc
             filename_cplr: ${ANLPREFIX}.coupler.res
@@ -267,7 +269,10 @@ BKGERRBLK="
                                mass_fraction_of_sea_salt002_in_air,
                                mass_fraction_of_sea_salt003_in_air,
                                mass_fraction_of_sea_salt004_in_air,
-                               mass_fraction_of_sea_salt005_in_air]
+                               mass_fraction_of_sea_salt005_in_air,
+                               mass_fraction_of_nitrate001_in_air,
+                               mass_fraction_of_nitrate002_in_air,
+                               mass_fraction_of_nitrate003_in_air]
             bump:
               io:
                 files prefix: BUMP/fv3jedi_bumpparameters_nicas_3D_gfs
@@ -303,7 +308,7 @@ OBSBLK="
           Sensor_ID: ${SENSORID}
           EndianType: little_endian
           CoefficientPath: ./CRTM/
-          AerosolOption: aerosols_gocart_1
+          AerosolOption: aerosols_gocart_2
           RCFile: geosaod.rc
           model units coeff: 1.e-9
       obs error:
@@ -331,7 +336,7 @@ ${OBSBLK}
     npy: ${NPY}
     npz: ${NPZ}
     ntiles: 6
-    field metadata override: gfs-aerosol.yaml
+    field metadata override: ufs-aerosol.yaml
 final:
   diagnostics:
     departures: oman
@@ -355,7 +360,7 @@ variational:
       npx: ${NPX}
       npy: ${NPY}
       npz: ${NPZ}
-      field metadata override: gfs-aerosol.yaml
+      field metadata override: ufs-aerosol.yaml
 #    diagnostics:
 #      departures: ombg
   - ninner: 10
@@ -368,7 +373,7 @@ variational:
       npx: ${NPX}
       npy: ${NPY}
       npz: ${NPZ}
-      field metadata override: gfs-aerosol.yaml
+      field metadata override: ufs-aerosol.yaml
 #    diagnostics:
 #      departures: ombg
 EOF

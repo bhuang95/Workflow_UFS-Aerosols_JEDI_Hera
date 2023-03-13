@@ -63,8 +63,12 @@ nanal=${NMEM_ENKF}
 cycN=\`\${incdate} -6 ${CDATE}\`
 cycN1=\`\${incdate} 6 \${cycN}\`
 
+tmpDiag=\${tmpDir}/run_diag_\${cycN}
 mkdir -p \${tmpDir}
 mkdir -p \${bakupDir}
+
+[[ -d \${tmpDiag} ]] && rm -rf \${tmpDiag}
+mkdir -p \${tmpDiag}
 
 echo \${cycN}
 cycY=\`echo \${cycN} | cut -c 1-4\`
@@ -88,6 +92,7 @@ hsi "mkdir -p \${hpssExpDir}"
 cntlGDAS=\${dataDir}/gdas.\${cycYMD}/\${cycH}/
 cntlGDAS_atmos=\${dataDir}/gdas.\${cycYMD}/\${cycH}/atmos/
 cntlGDAS_chem=\${dataDir}/gdas.\${cycYMD}/\${cycH}/chem/
+cntlGDAS_diag=\${dataDir}/gdas.\${cycYMD}/\${cycH}/diag
 
 if [ -s \${cntlGDAS} ]; then
 ### Copy the logfiles
@@ -101,12 +106,17 @@ if [ -s \${cntlGDAS} ]; then
    
 ### Backup cntl data
     cntlBakup_RST=\${bakupDir}/gdas.\${cycYMD}/\${cycH}/atmos/RESTART
+    cntlBakup_diag=\${bakupDir}/gdas.\${cycYMD}/\${cycH}/diag/
     mkdir -p \${cntlBakup_RST}
-
+    mkdir -p \${cntlBakup_diag}
+   
+    /bin/cp -r \${cntlGDAS_diag}/* \${cntlBakup_diag}
+    /bin/cp -r \${cntlGDAS_diag} \${tmpDiag}/diaggdas.\${cycN}
+     
     /bin/cp -r \${cntlGDAS_atmos}/RESTART/\${cyc1prefix}.coupler* \${cntlBakup_RST}/
     /bin/cp -r \${cntlGDAS_atmos}/RESTART/\${cyc1prefix}.fv_core* \${cntlBakup_RST}/
     /bin/cp -r \${cntlGDAS_atmos}/RESTART/\${cyc1prefix}.fv_tracer* \${cntlBakup_RST}/
-    
+        
     ERR=\$?
     if [ \${ERR} -ne 0 ]; then
        echo "Copy Control gdas.\${cycN} failed and exit at error code \${ERR}"
@@ -116,7 +126,7 @@ if [ -s \${cntlGDAS} ]; then
 
     cd \${cntlGDAS}
     TARFILE=gdas.\${cycN}.tar
-    htar -P -cvf \${hpssExpDir}/\${TARFILE}.tar *
+    htar -P -cvf \${hpssExpDir}/\${TARFILE} *
 
     ERR=\$?
     if [ \${ERR} -ne 0 ]; then
@@ -132,9 +142,15 @@ if [ -s \${cntlGDAS} ]; then
         enkfGDAS=\${dataDir}/enkfgdas.\${cycYMD}/\${cycH}/
         enkfGDAS_atmos=\${dataDir}/enkfgdas.\${cycYMD}/\${cycH}/atmos
         enkfGDAS_chem=\${dataDir}/enkfgdas.\${cycYMD}/\${cycH}/chem
+        enkfGDAS_diag=\${dataDir}/enkfgdas.\${cycYMD}/\${cycH}/diag
 
     ### Clean unnecessary enkf files
-    /bin/rm -rf \${enkfGDAS_atmos}/mem???/*.txt
+        /bin/rm -rf \${enkfGDAS_atmos}/mem???/*.txt
+
+        enkfBakup_diag=\${bakupDir}/gdas.\${cycYMD}/\${cycH}/diag/
+        mkdir -p \${enkfBakup_diag}
+        /bin/cp -r \${enkfGDAS_diag}/* \${enkfBakup_diag}
+        /bin/cp -r \${enkfGDAS_diag} \${tmpDiag}/diagenkfgdas.\${cycN}
 
     ### Backup ensemble mean files
         enkfGDAS_Mean_atmos=\${dataDir}/enkfgdas.\${cycYMD}/\${cycH}/atmos/ensmean
@@ -157,29 +173,24 @@ if [ -s \${cntlGDAS} ]; then
 #        while [ \${ianal} -le \${nanal} ]; do
 #           memStr=mem\`printf %03i \$ianal\`
 #
-#           enkfGDAS_Mem=\${dataDir}/enkfgdas.\${cycYMD}/\${cycH}/\${memStr}
-#           enkfBakup_Mem=\${bakupDir}/enkfgdas.\${cycYMD}/\${cycH}/\${memStr}
+#           enkfGDAS_Mem_atmos=\${dataDir}/enkfgdas.\${cycYMD}/\${cycH}/atmos/\${memStr}
 #
-#           ### clean uncessary mem files
-#           /bin/rm -r \${enkfGDAS_Mem}/gdas.t??z.logf???.txt
-#
-#           ### back mem data
-#           mkdir -p \${enkfBakup_Mem}/RESTART
-#           /bin/cp -r \${enkfGDAS_Mem}/obs \${enkfBakup_Mem}
-#           /bin/cp -r \${enkfGDAS_Mem}/RESTART/*.fv_aod_* \${enkfBakup_Mem}/RESTART/
-#           /bin/cp -r \${enkfGDAS_Mem}/RESTART/\${cyc1prefix}.coupler.res.* \${enkfBakup_Mem}/RESTART/
-#           /bin/cp -r \${enkfGDAS_Mem}/RESTART/\${cyc1prefix}.fv_tracer.* \${enkfBakup_Mem}/RESTART/
-#           /bin/cp -r \${enkfGDAS_Mem}/RESTART/\${cyc1prefix}.fv_core.* \${enkfBakup_Mem}/RESTART/
+#           ERR=\$?
+#           if [ \${ERR} -ne 0 ]; then
+#               echo "Copy ensmem gdas.\${cycN} failed and exit at error code \${ERR}"
+#               echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}
+#               exit \${ERR}
+#           fi
 #
 #           ianal=\$[\$ianal+1]
 #    
 #        done
-#
-#        if [ \$? != '0' ]; then
-#           echo "Copy EnKF enkfgdas.\${cycYMD}\${cycH} failed and exit at error code \$?"
-#            echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}
-#           exit \$?
-#        fi
+
+        if [ \$? != '0' ]; then
+           echo "Copy EnKF enkfgdas.\${cycYMD}\${cycH} failed and exit at error code \$?"
+            echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}
+           exit \$?
+        fi
         
         # Tar ensemble files to HPSS
         IGRP=0
@@ -213,9 +224,9 @@ if [ -s \${cntlGDAS} ]; then
 	IGRP=0
 	while [ \${IGRP} -le \${NGRPS} ]; do
 	    if [ \${IGRP} -eq 0 ]; then
-	        TARFILE=enkfgdas.\${cycN}.atmos.ensmean
+	        TARFILE=enkfgdas.\${cycN}.atmos.ensmean.tar
 	    else
-	        TARFILE=enkfgdas.\${cycN}.atmos.grp\${IGRP}
+	        TARFILE=enkfgdas.\${cycN}.atmos.grp\${IGRP}.tar
 	    fi
 	    LGRP=\${tmpDir}/list.atmos.grp\${IGRP}
 	    cd \${enkfGDAS_atmos}
@@ -233,7 +244,7 @@ if [ -s \${cntlGDAS} ]; then
 
 
 	    if [ \${IGRP} -ge 1 ]; then
-	        TARFILE=enkfgdas.\${cycN}.chem.grp\${IGRP}
+	        TARFILE=enkfgdas.\${cycN}.chem.grp\${IGRP}.tar
 	        LGRP=\${tmpDir}/list.chem.grp\${IGRP}
 	        cd \${enkfGDAS_chem}
 	        htar -P -cvf \${hpssExpDir}/\${TARFILE}  \$(cat \${LGRP})
@@ -251,10 +262,24 @@ if [ -s \${cntlGDAS} ]; then
 	done
     fi #End of EnKF
 
+    cd \${tmpDiag}
+    TARFILE=diag.\${cycN}.tar
+    htar -P -cvf \${hpssExpDir}/\${TARFILE} *
+
+    ERR=\$?
+    if [ \${ERR} -ne 0 ]; then
+       echo "HTAR failed at gdas.\${cycN} and exit at error code \${ERR}"
+       echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}
+       exit \${ERR}
+    else
+       echo "HTAR at gdas.\${cycN} completed !"
+    fi
+
     if [ \${ERR} -eq 0 ]; then
         echo "HTAR is successful at \${cycN}"
 	/bin/rm -rf \${enkfGDAS}
 	/bin/rm -rf \${cntlGDAS}
+	/bin/rm -rf \${tmpDiag}
     else
         echo "HTAR failed at \${cycN}"
         echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}
