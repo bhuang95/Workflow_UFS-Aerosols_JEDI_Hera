@@ -85,7 +85,7 @@ while [ ${IMEM} -le ${ENSED} ]; do
 done
 
 cd ${DATA}
-cp -r ${REPLACEEXEC} ./
+${NCP} -r ${REPLACEEXEC} ./replace_aeroanl_restart.py
 echo ${INVARS} > INVARS.nml
 
 python replace_aeroanl_restart.py -i ${JEDIPREFIX} -o ${NEWPREFIX}  -m ${ENSST} -n ${ENSED} -v "INVARS.nml" 
@@ -93,4 +93,4 @@ python replace_aeroanl_restart.py -i ${JEDIPREFIX} -o ${NEWPREFIX}  -m ${ENSST} 
 ERR=$?
 [[ ${ERR} -ne 0 ]] && exit ${ERR}
 
-exit 0
+exit ${ERR}

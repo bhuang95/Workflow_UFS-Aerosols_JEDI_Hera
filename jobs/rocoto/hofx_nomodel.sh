@@ -95,12 +95,8 @@ if [ ${AERODA} = "TRUE" ]; then
 fi
 
 echo "HOFXFIELDS=${HOFXFIELDS}"
-if [ ${HOFXFIELDS} = " " ]; then
-   echo "HOFXFIELDS is empty and exit!"
-   ERR=1
-   exit ${ERR}
-fi
 
+[[ -z ${HOFXFIELDS} ]] && { echo "HOFXFIELDS is empty" ; exit 1; }
 
 for FIELD in ${HOFXFIELDS}; do
     if [ ${FIELD} = "cntlbckg" -o ${FIELD} = "cntlanal" ]; then
@@ -119,7 +115,7 @@ for FIELD in ${HOFXFIELDS}; do
 	MEMOPT="mem"
     fi
 
-    if [ ${FIELD} = "cntlanal" -o ${FIELD} = "memanal" -o ${FIELD} = "ememanal" ]; then
+    if [ ${FIELD} = "cntlanal" -o ${FIELD} = "meananal" -o ${FIELD} = "memanal" ]; then
        export TRCR="fv_tracer_aeroanl"
     else
        export TRCR="fv_tracer"

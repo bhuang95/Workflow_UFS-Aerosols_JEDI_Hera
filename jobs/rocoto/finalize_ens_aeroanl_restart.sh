@@ -109,4 +109,6 @@ srun --export=all -n 1 python recenter_enkf_aeroanl_restart.py -i ${ENSST} -j ${
 ERR=$?
 [[ ${ERR} -ne 0 ]] && exit ${ERR}
 
-exit 0
+${NRM} ${DATA}
+
+exit ${ERR}

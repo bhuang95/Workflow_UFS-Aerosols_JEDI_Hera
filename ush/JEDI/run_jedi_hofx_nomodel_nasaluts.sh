@@ -153,7 +153,7 @@ state:
   filetype: fms restart
   datapath: INPUT/
   filename_core: ${ANLPREFIX}.fv_core.res.nc
-  filename_trcr: ${ANLPREFIX}.fv_tracer.res.nc
+  filename_trcr: ${ANLPREFIX}.${TRCR}.res.nc
   filename_cplr: ${ANLPREFIX}.coupler.res
   state variables: [T,delp,sphum,
                     so4,bc1,bc2,oc1,oc2,
@@ -190,7 +190,7 @@ observations:
 "
 
 # Create yaml file
-cat << EOF > ${DATA}/hofx_nomodel_aero.yaml
+cat << EOF > ${DATA}/hofx_nomodel_aero_${AODTYPE}.yaml
 window begin: &date '${STWINFMT}'
 window length: PT6H
 geometry:
@@ -216,7 +216,7 @@ export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEjedi}/lib/"
 export OMP_NUM_THREADS=1
 ulimit -s unlimited
 
-srun --export=all -n ${NCORES} ./fv3jedi_hofx_nomodel.x "./hofx_nomodel_aero.yaml" "./hofx_nomodel_aero.log"
+srun --export=all -n ${NCORES} ./fv3jedi_hofx_nomodel.x "./hofx_nomodel_aero_${AODTYPE}.yaml" "./hofx_nomodel_aero.log"
 ERR=$?
 if [ ${ERR} -ne 0 ]; then
    echo "JEDI hofx failed and exit the program!!!"
@@ -224,10 +224,12 @@ if [ ${ERR} -ne 0 ]; then
 fi
 
 ${NMV} ${DIAGDIR}/${HOFXOUT} ${HOFXDIR}/${HOFXOUT}
+${NCP} ${DATA}/hofx_nomodel_aero_${AODTYPE}.yaml ${HOFXDIR}/
+
 ERR=$?
 if [ ${ERR} -ne 0 ]; then
    echo "Moving hofx failed and exit the program!!!"
    exit ${ERR}
 fi
 
-exit 0
+exit ${ERR}

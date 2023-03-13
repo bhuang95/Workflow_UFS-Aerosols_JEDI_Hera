@@ -95,7 +95,7 @@ ${NLN} ${JEDIDIR}/geos-aero/test/Data ${DATA}/
 
 # Link observations (only for VIIRS or MODIS)
 OBSTIME=${ANLTIME}
-if [ ${AODTYPE} = "VIIRS" ]; then
+if [ ${AODTYPE} = "NOAA_VIIRS" ]; then
     OBSIN=${OBSDIR}/${OBSTIME}/VIIRS_AOD_npp.${OBSTIME}.nc
     OBSIN1=${OBSDIR}/${OBSTIME}/VIIRS_AOD_j01.${OBSTIME}.nc
     SENSORID=v.viirs-m_npp
@@ -184,7 +184,7 @@ while [ ${IMEM} -le ${NMEM} ]; do
 done
 
 # Link executable
-${NLN} ${JEDIEXE} ${DATA}/fv3jedi_letkf.x
+${NLN} ${JEDIEXE} ${DATA}/fv3jedi_enkf.x
 
 # Gnerate control yaml block
 BKGBLK="  
@@ -216,7 +216,7 @@ observations:
       name: Aod
       distribution:
         name: Halo
-        halo size: 5000e3
+        halo size: 2500e3
       obsdatain:
         engine:
           type: H5File
@@ -245,7 +245,7 @@ observations:
 "
 
 # Create yaml file
-cat << EOF > ${DATA}/letkf_gfs_aero.yaml
+cat << EOF > ${DATA}/enkf_gfs_aero_${AODTYPE}.yaml
 geometry:
   fms initialization:
     namelist filename: fmsmpp.nml
@@ -273,9 +273,9 @@ driver:
 local ensemble DA:
   solver: LETKF
   inflation:
-    rtps: 0.5
-    rtpp: 0.6
-    mult: 1.1
+    rtps: 0.85
+    rtpp: 0.0
+    mult: 1.2
 
 output:
   filetype: fms restart
@@ -285,4 +285,11 @@ output:
 #  frequency: PT1H
 EOF
 
-exit 0
+cat ${DATA}/enkf_gfs_aero_${AODTYPE}.yaml
+
+[[ ! -d ${GESENSDIR_IN}/${COMPONENT}/ensmean ]] && mkdir -p ${GESENSDIR_IN}/${COMPONENT}/ensmean
+${NCP} ${DATA}/enkf_gfs_aero_${AODTYPE}.yaml ${GESENSDIR_IN}/${COMPONENT}/ensmean
+
+ERR=$?
+
+exit ${ERR}

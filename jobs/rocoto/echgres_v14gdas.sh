@@ -239,4 +239,4 @@ srun --export=all -n 36 chgres_cube
     IMEM=$((IMEM+1))
 done
 
-exit 0
+exit ${ERR}

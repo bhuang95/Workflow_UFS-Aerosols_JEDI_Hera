@@ -105,6 +105,9 @@ if [ -s \${cntlGDAS} ]; then
     /bin/rm -rf \${cntlGDAS_atmos}/gdas.t??z.*?.txt
     /bin/rm -rf \${cntlGDAS_atmos}/gdas.t??z.master.grb2f???
     /bin/rm -rf \${cntlGDAS_atmos}/gdas.t??z.sfluxgrbf???.grib2
+    if [ \${AERODA} = "TRUE" ]; then
+        /bin/rm -rf \${cntlGDAS_atmos}/RESTART/\${cyc1prefix}.fv_tracer_aeroanl_tmp.res.tile?.nc
+    fi
    
 ### Backup cntl data
     cntlBakup_RST=\${bakupDir}/gdas.\${cycYMD}/\${cycH}/atmos/RESTART
@@ -148,28 +151,31 @@ if [ -s \${cntlGDAS} ]; then
 
     ### Clean unnecessary enkf files
         /bin/rm -rf \${enkfGDAS_atmos}/mem???/*.txt
+        if [ \${AERODA} = "TRUE" ]; then
+            /bin/rm -rf \${enkfGDAS_atmos}/mem???/RESTART/\${cyc1prefix}.fv_tracer_aeroanl_tmp.res.tile?.nc
+        fi
 
-        enkfBakup_diag=\${bakupDir}/gdas.\${cycYMD}/\${cycH}/diag/
+        enkfBakup_diag=\${bakupDir}/enkfgdas.\${cycYMD}/\${cycH}/diag/
         mkdir -p \${enkfBakup_diag}
         /bin/cp -r \${enkfGDAS_diag}/* \${enkfBakup_diag}
         /bin/cp -r \${enkfGDAS_diag} \${tmpDiag}/diagenkfgdas.\${cycN}
 
     ### Backup ensemble mean files
-        enkfGDAS_Mean_atmos=\${dataDir}/enkfgdas.\${cycYMD}/\${cycH}/atmos/ensmean
-        enkfBakup_Mean_RST=\${bakupDir}/enkfgdas.\${cycYMD}/\${cycH}/atmos/ensmean/RESTART
+        #enkfGDAS_Mean_atmos=\${dataDir}/enkfgdas.\${cycYMD}/\${cycH}/atmos/ensmean
+        #enkfBakup_Mean_RST=\${bakupDir}/enkfgdas.\${cycYMD}/\${cycH}/atmos/ensmean/RESTART
 
-        mkdir -p \${enkfBakup_Mean_RST}/
+        #mkdir -p \${enkfBakup_Mean_RST}/
         #/bin/cp -r \${enkfGDAS_Mean}/obs \${enkfBakup_Mean}/
-        /bin/cp -r \${enkfGDAS_Mean_atmos}/RESTART/\${cyc1prefix}.coupler* \${enkfBakup_Mean_RST}/
-        /bin/cp -r \${enkfGDAS_Mean_atmos}/RESTART/\${cyc1prefix}.fv_tracer* \${enkfBakup_Mean_RST}/
-        /bin/cp -r \${enkfGDAS_Mean_atmos}/RESTART/\${cyc1prefix}.fv_core* \${enkfBakup_Mean_RST}/
+        #/bin/cp -r \${enkfGDAS_Mean_atmos}/RESTART/\${cyc1prefix}.coupler* \${enkfBakup_Mean_RST}/
+        #/bin/cp -r \${enkfGDAS_Mean_atmos}/RESTART/\${cyc1prefix}.fv_tracer* \${enkfBakup_Mean_RST}/
+        #/bin/cp -r \${enkfGDAS_Mean_atmos}/RESTART/\${cyc1prefix}.fv_core* \${enkfBakup_Mean_RST}/
 
-        ERR=\$?
-        if [ \${ERR} -ne 0 ]; then
-            echo "Copy ensmean gdas.\${cycN} failed and exit at error code \${ERR}"
-            echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}
-            exit \${ERR}
-        fi
+        #ERR=\$?
+        #if [ \${ERR} -ne 0 ]; then
+        #    echo "Copy ensmean gdas.\${cycN} failed and exit at error code \${ERR}"
+        #    echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}
+        #    exit \${ERR}
+        #fi
 
 #        ianal=1
 #        while [ \${ianal} -le \${nanal} ]; do
@@ -188,11 +194,11 @@ if [ -s \${cntlGDAS} ]; then
 #    
 #        done
 
-        if [ \$? != '0' ]; then
-           echo "Copy EnKF enkfgdas.\${cycYMD}\${cycH} failed and exit at error code \$?"
-            echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}
-           exit \$?
-        fi
+        #if [ \$? != '0' ]; then
+        #   echo "Copy EnKF enkfgdas.\${cycYMD}\${cycH} failed and exit at error code \$?"
+        #    echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}
+        #   exit \$?
+        #fi
         
         # Tar ensemble files to HPSS
         IGRP=0
@@ -279,9 +285,9 @@ if [ -s \${cntlGDAS} ]; then
 
     if [ \${ERR} -eq 0 ]; then
         echo "HTAR is successful at \${cycN}"
-	/bin/rm -rf \${enkfGDAS}
-	/bin/rm -rf \${cntlGDAS}
-	/bin/rm -rf \${tmpDiag}
+	#/bin/rm -rf \${enkfGDAS}
+	#/bin/rm -rf \${cntlGDAS}
+	#/bin/rm -rf \${tmpDiag}
     else
         echo "HTAR failed at \${cycN}"
         echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}

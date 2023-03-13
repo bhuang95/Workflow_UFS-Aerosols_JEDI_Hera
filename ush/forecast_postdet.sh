@@ -61,16 +61,24 @@ FV3_GFS_postdet(){
 
       # Link fv3_tracer restart files from $memdir
       #if $(ls $gmemdir/RESTART/${sPDY}.${scyc}0000.fv_tracer_aeroanl.*.nc); then
-      if [ -f $gmemdir/RESTART/${sPDY}.${scyc}0000.fv_tracer_aeroanl.res.tile6.nc ]; then
-          trcr="fv_tracer_aeroanl"
-	  echo "Link aerosol cntl analysis to INPUT directory."
-      #elif $(ls $gmemdir/RESTART/${sPDY}.${scyc}0000.fv_tracer_raeroanl.*.nc); then
-      elif [ -f $gmemdir/RESTART/${sPDY}.${scyc}0000.fv_tracer_raeroanl.res.tile6.nc ]; then
-          trcr="fv_tracer_raeroanl"
-	  echo "Link aerosol enkf analysis to INPUT directory."
+      tracer_aeroanl=$gmemdir/RESTART/${sPDY}.${scyc}0000.fv_tracer_aeroanl.res.tile6.nc
+      tracer_raeroanl=$gmemdir/RESTART/${sPDY}.${scyc}0000.fv_tracer_raeroanl.res.tile6.nc
+      if [ -f ${tracer_aeroanl} -o -f ${tracer_raeroanl} ]; then
+          if [ -f ${tracer_raeroanl} ]; then
+              trcr="fv_tracer_raeroanl"
+	      echo "Link recentered aerosol enkf analysis to INPUT directory."
+          else
+              trcr="fv_tracer_aeroanl"
+	      echo "Link aerosol cntl analysis to INPUT directory."
+          fi
       else
           trcr="fv_tracer"
 	  echo "Link aerosol background to INPUT directory."
+      fi
+
+      if [ ${AERODA} = "TRUE" -a ${trcr} = "fv_tracer" ]
+          echo "AERODA=${AERODA} but trcr=${trcr}, exit!"
+	  exit 99
       fi
 
       for file in $(ls $gmemdir/RESTART/${sPDY}.${scyc}0000.${trcr}.*.nc); do

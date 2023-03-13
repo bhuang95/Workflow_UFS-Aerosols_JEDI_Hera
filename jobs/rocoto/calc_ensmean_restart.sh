@@ -68,7 +68,7 @@ for TILEFILE in ${TILEFILES}; do
 
     cd ${TILEDIR}
     echo ${INVARS} > INVARS.nml
-    ${NLN} ${MEANEXEC} ./
+    ${NCP} ${MEANEXEC} ./calc_ensmean_restart.py
 
     IMEM=1
     while [ ${IMEM} -le ${NMEM} ]; do
@@ -100,4 +100,4 @@ fi
 
 rm -rf ${DATA}
 
-exit 0
+exit ${ERR}

@@ -76,7 +76,7 @@ OSUFFIX=${OSUFFIX:-""}
 # Guess files
 GPREFIX=${GPREFIX:-""}
 GSUFFIX=${GSUFFIX:-$SUFFIX}
-
+ 
 # Analysis files
 export APREFIX=${APREFIX:-""}
 export ASUFFIX=${ASUFFIX:-$SUFFIX}
@@ -86,6 +86,12 @@ export ASUFFIX=${ASUFFIX:-$SUFFIX}
 
 # prepare for JEDI-var update
 $JEDIUSH/run_jedi_aeroanl_3denvar_nasaluts_yaml.sh
+
+ERR=$?
+if [ ${ERR} -ne 0 ]; then
+   echo "Running run_jedi_aeroanl_3denvar_nasaluts_yaml.sh failed and exit the program!!!"
+   exit ${ERR}
+fi
 
 # run JEDI
 #source /apps/lmod/7.7.18/init/ksh
@@ -104,7 +110,7 @@ ulimit -s unlimited
 
 echo $LD_LIBRARY_PATH
 
-srun --export=all -n ${ncore_envar} ./fv3jedi_var.x hyb-3dvar_gfs_aero.yaml hyb-3dvar_gfs-aero.run
+srun --export=all -n ${ncore_envar} ./fv3jedi_var.x hyb-3dvar_gfs_aero_${AODTYPE}.yaml hyb-3dvar_gfs_aero_${AODTYPE}.run
 ERR=$?
 
 if [ ${ERR} -ne 0 ]; then
@@ -156,8 +162,8 @@ cd ${DATA}
 ################################################################################
 # Postprocessing
 cd $pwd
-#mkdata="YES"
-#[[ $mkdata = "YES" ]] && rm -rf $DATA
+mkdata="YES"
+[[ $mkdata = "YES" ]] && rm -rf $DATA
 
 set +x
 if [ $VERBOSE = "YES" ]; then

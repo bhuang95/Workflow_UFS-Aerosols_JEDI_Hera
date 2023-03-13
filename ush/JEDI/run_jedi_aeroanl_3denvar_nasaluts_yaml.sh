@@ -112,7 +112,7 @@ ${NLN} ${JEDIDIR}/geos-aero/test/Data ${DATA}/
 
 # Link observations (only for VIIRS or MODIS)
 OBSTIME=${ANLTIME}
-if [ ${AODTYPE} = "VIIRS" ]; then
+if [ ${AODTYPE} = "NOAA_VIIRS" ]; then
     OBSIN=${OBSDIR}/${OBSTIME}/VIIRS_AOD_npp.${OBSTIME}.nc
     OBSIN1=${OBSDIR}/${OBSTIME}/VIIRS_AOD_j01.${OBSTIME}.nc
     SENSORID=v.viirs-m_npp
@@ -316,7 +316,7 @@ OBSBLK="
 "
 
 # Create yaml file
-cat << EOF > ${DATA}/hyb-3dvar_gfs_aero.yaml
+cat << EOF > ${DATA}/hyb-3dvar_gfs_aero_${AODTYPE}.yaml
 cost function:
 ${BKGBLK}
 ${BKGERRBLK}
@@ -350,7 +350,7 @@ variational:
   minimizer:
     algorithm: DRIPCG
   iterations:
-  - ninner: 5
+  - ninner: 50
     gradient norm reduction: 1e-10
     test: on
     geometry:
@@ -363,7 +363,7 @@ variational:
       field metadata override: ufs-aerosol.yaml
 #    diagnostics:
 #      departures: ombg
-  - ninner: 10
+  - ninner: 80
     gradient norm reduction: 1e-10
     test: on
     geometry:
@@ -378,4 +378,10 @@ variational:
 #      departures: ombg
 EOF
 
-exit 0
+cat ${DATA}/hyb-3dvar_gfs_aero_${AODTYPE}.yaml
+
+${NCP} ${DATA}/hyb-3dvar_gfs_aero_${AODTYPE}.yaml ${GESDIR_IN}
+
+ERR=$?
+
+exit ${ERR}

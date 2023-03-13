@@ -87,6 +87,12 @@ export ASUFFIX=${ASUFFIX:-$SUFFIX}
 # prepare for JEDI-var update
 $JEDIUSH/run_jedi_aeroanl_letkf_nasaluts_yaml.sh
 
+ERR=$?
+if [ ${ERR} -ne 0 ]; then
+   echo "Running run_jedi_aeroanl_3denvar_nasaluts_yaml.sh failed and exit the program!!!"
+   exit ${ERR}
+fi
+
 # run JEDI
 #source /apps/lmod/7.7.18/init/ksh
 #. ${HOMEjedi}/jedi_module_base.hera
@@ -104,7 +110,7 @@ export OMP_NUM_THREADS=1
 
 echo $LD_LIBRARY_PATH
 
-srun --export=all -n ${ncore_letkf} fv3jedi_letkf.x letkf_gfs_aero.yaml letif_gfs-aero.run
+srun --export=all -n ${ncore_letkf} fv3jedi_enkf.x enkf_gfs_aero_${AODTYPE}.yaml enkf_gfs_aero_${AODTYPE}.run
 ERR=$?
 
 echo "Just finish the JEDI varaitional run test and exit temporarily"
@@ -125,7 +131,7 @@ while [[ ${ITILE} -le 6 ]]; do
     ${NCP} ${GESFILE} ${ANLFILE}
     ${NLN} ${ANLFILE_TMP} ./input.tile${ITILE}
     ${NLN} ${ANLFILE} ./output.tile${ITILE}
-    ${NLN} ${GESFILE} ./ges.tile${ITILE}
+    #${NLN} ${GESFILE} ./ges.tile${ITILE}
     ITILE=$((ITILE+1))
 done
 
@@ -156,8 +162,8 @@ fi
 ################################################################################
 # Postprocessing
 cd $pwd
-#mkdata="YES"
-#[[ $mkdata = "YES" ]] && rm -rf $DATA
+mkdata="YES"
+[[ $mkdata = "YES" ]] && rm -rf $DATA
 
 set +x
 if [ $VERBOSE = "YES" ]; then
