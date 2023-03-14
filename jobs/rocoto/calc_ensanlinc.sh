@@ -134,7 +134,7 @@ EOF
 done
 
 set +x 
-rm -rf ${DATA}/calcensinc.$$
+rm -rf ${DATA}
 exit ${ERR}
 ###############################################################
 

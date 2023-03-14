@@ -210,6 +210,8 @@ ${STABLK}
 ${OBSBLK}
 EOF
 
+cat ${DATA}/hofx_nomodel_aero_${AODTYPE}.yaml
+
 source ${HOMEjedi}/jedi_module_base.hera.sh
 #source /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/MISC/codeDev/JEDI/jedi-bundle/20230113/build/jedi_module_base.hera.sh
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEjedi}/lib/"

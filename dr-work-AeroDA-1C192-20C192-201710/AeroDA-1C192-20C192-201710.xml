@@ -85,12 +85,12 @@
 
 	<!ENTITY QUEUE_ANAL_GDAS     "&QUEUE;">
 	<!ENTITY WALLTIME_ANAL_GDAS  "00:29:00">
-	<!ENTITY RESOURCES_ANAL_GDAS "9:ppn=16:tpp=1">
+	<!ENTITY RESOURCES_ANAL_GDAS "12:ppn=12:tpp=1">
 	<!ENTITY MEMORIES_ANAL_GDAS "80000M">
 	<!ENTITY NATIVE_ANAL_GDAS    "--export=NONE">
 
 	<!ENTITY QUEUE_ANAL_ENKF_GDAS     "&QUEUE;">
-	<!ENTITY WALLTIME_ANAL_ENKF_GDAS  "00:29:00">
+	<!ENTITY WALLTIME_ANAL_ENKF_GDAS  "00:59:00">
 	<!ENTITY RESOURCES_ANAL_ENKF_GDAS "9:ppn=16:tpp=1">
 	<!ENTITY MEMORIES_ANAL_ENKF_GDAS "80000M">
 	<!ENTITY NATIVE_ANAL_ENKF_GDAS    "--export=NONE">
@@ -170,7 +170,7 @@
 
 	<command>&JOBS_DIR;/calc_anlinc.sh</command>
 
-	<jobname><cyclestr>&PSLOT;_calcinc_@H</cyclestr></jobname>
+	<jobname><cyclestr>&PSLOT;_gdascalcinc_@H</cyclestr></jobname>
 
 	<queue>&QUEUE;</queue>
 	<partition>&PARTITION;</partition>
@@ -180,7 +180,7 @@
 	<memory>&MEMORIES_CALCINC_GDAS;</memory>
 	<native>&NATIVE_CALCINC_GDAS;</native>
 
-	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/calcinc.log</cyclestr></join>
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdascalcinc.log</cyclestr></join>
 
 	<envar><name>METRETDIR</name><value>&METRETDIR;</value></envar>
 	<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
@@ -636,6 +636,7 @@
 		<and>
 			<taskdep task="gdasfcst"/>
 			<metataskdep metatask="gdasefmn"/>
+			<metataskdep metatask="gdasemean"/>
 			<metataskdep metatask="gdasaerodiag"/>
 		</and>
 	</dependency>

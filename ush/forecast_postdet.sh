@@ -76,7 +76,7 @@ FV3_GFS_postdet(){
 	  echo "Link aerosol background to INPUT directory."
       fi
 
-      if [ ${AERODA} = "TRUE" -a ${trcr} = "fv_tracer" ]
+      if [ ${AERODA} = "TRUE" -a ${trcr} = "fv_tracer" ]; then
           echo "AERODA=${AERODA} but trcr=${trcr}, exit!"
 	  exit 99
       fi

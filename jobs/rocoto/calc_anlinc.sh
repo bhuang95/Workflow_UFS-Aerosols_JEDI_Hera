@@ -127,7 +127,7 @@ fi
 #unlink atminc_mem001
 
 set +x 
-rm -rf ${DATA}/calcinc.$$
+rm -rf ${DATA}
 exit ${ERR}
 ###############################################################
 
