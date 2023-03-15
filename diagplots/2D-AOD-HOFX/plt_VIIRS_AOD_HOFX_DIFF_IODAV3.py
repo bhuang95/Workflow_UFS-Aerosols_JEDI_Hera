@@ -70,7 +70,7 @@ def plot_map_satter_obsonly(lons, lats, obs, cmap, cyc):
     return
     
 
-def plot_map_satter(lons, lats, obs, hfx, hfx2obs, cmap_aod, cmap_bias, titlepre, cycpre):
+def plot_map_satter_aod_hfx(lons, lats, obs, hfx, hfx2obs, cmap_aod, cmap_bias, titlepre, cycpre):
     vvend1='max'
     ccmap1=cmap_aod
     bounds=[0.0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.0]
@@ -79,14 +79,14 @@ def plot_map_satter(lons, lats, obs, hfx, hfx2obs, cmap_aod, cmap_bias, titlepre
     vvend2='both'
     ccmap2=cmap_bias
     boundpos1=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-    boundpos=[x*0.06 for x in boundpos1]
+    boundpos=[x*0.04 for x in boundpos1]
     boundneg=[-x for x in boundpos]
     boundneg=boundneg[::-1]
     boundneg.append(0.00)
     bounds=boundneg + boundpos
     norm2=mpcrs.BoundaryNorm(bounds, ccmap2.N)
     
-    fig=plt.figure(figsize=[5, 9])
+    fig=plt.figure(figsize=[6, 8])
     for ipt in range(3):
         ax=fig.add_subplot(3,1,ipt+1)
         if ipt==0:
@@ -127,7 +127,7 @@ def plot_map_satter(lons, lats, obs, hfx, hfx2obs, cmap_aod, cmap_bias, titlepre
             map.drawmeridians(meridians,labels=[False,False,False,True],linewidth=0.2, fontsize=font2, color='grey', dashes=(None,None))
             x,y=map(lons, lats)
             cs=map.scatter(lons,lats, s=1, c=data, marker='.', cmap=cmap, norm=norm)
-            cb=map.colorbar(cs,"right",  pad="4%", extend=vvend)
+            cb=map.colorbar(cs,"right", size=0.1, pad=0.02, extend=vvend)
             cb.ax.tick_params(labelsize=font2)
             ellblack = matplotlib.patches.Ellipse(xy=map(10,22), width=56, height=23, color='black',linewidth=3,fill=False)
             ellred = matplotlib.patches.Ellipse(xy=map(17,-2), width=23, height=15, color='red',linewidth=3,fill=False)
@@ -290,8 +290,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     cdate = args.cycle
     cinch = args.increment
-    aeroda = args.aeroda
-    emean = args.emean
+    aeroda = (args.aeroda == "True" or args.aeroda == "true" or args.aeroda == "TRUE")
+    emean = (args.emean == "True" or args.emean == "true" or args.emean == "TRUE")
     prefix = args.prefix
     datadir = args.topdatadir
 
@@ -328,6 +328,9 @@ if __name__ == '__main__':
     vobs = "aerosolOpticalDepth"
     vhfx = "aerosolOpticalDepth"
 
+    print(f"HBO-{aeroda}-{emean}")
+    print(emean)
+    print(type(emean))
     if emean:
         enkfpre =  "enkf"
         meanpre =  "ensmean"
@@ -342,28 +345,33 @@ if __name__ == '__main__':
 
     cycst = cdate
     cyced = ndate(cdate, cinch)
+
     if cinch == 6:
         cycpre = str(cdate)
     if cinch == 24:
         cycpre = str(cdate)[0:8]
-
 
     for trcr in trcrs:
         ncpre = f"NOAA_VIIRS_npp_obs_hofx_3dvar_LUTs_{trcr}"
 
         if trcr == "fv_tracer":
             if emean:
-                titlepre = f"{prefix}-cntlbkg"
+                titlepre = f"{prefix}-emeanBkg"
             else:
-                titlepre = f"{prefix}-emeanbkg"
+                titlepre = f"{prefix}-cntlBkg"
 
         if trcr == "fv_tracer_aeroanl":
             if emean:
-                titlepre = f"{prefix}-cntlanl"
+                titlepre = f"{prefix}-emeanAnl"
             else:
-                titlepre = f"{prefix}-emeananl"
+                titlepre = f"{prefix}-cntlAnl"
+
+        print(f"{enkfpre}-{meanpre}-{titlepre}")
 
         cyc = cycst
+        print(cyc)
+        print(cycst)
+        print(cyced)
         while cyc < cyced:
             cymd=str(cyc)[:8]
             ch=str(cyc)[8:]
@@ -388,10 +396,10 @@ if __name__ == '__main__':
                     lat = np.concatenate((lat, lattmp), axis=0)
                     obs = np.concatenate((obs, obstmp), axis=0)
                     hfx = np.concatenate((hfx, hfxtmp), axis=0)
-            cyc = ndate(cyc, cinch)
+            cyc = ndate(cyc, 6)
 
         hfx2obs = hfx - obs
-        plot_map_satter(lon, lat, obs, hfx, hfx2obs, cmap_aod, cmap_bias, titlepre, cycpre)
+        plot_map_satter_aod_hfx(lon, lat, obs, hfx, hfx2obs, cmap_aod, cmap_bias, titlepre, cycpre)
 
 """
 scyc=2016062100
