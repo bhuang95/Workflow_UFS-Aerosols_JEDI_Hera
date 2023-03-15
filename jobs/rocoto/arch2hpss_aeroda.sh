@@ -153,6 +153,7 @@ if [ -s \${cntlGDAS} ]; then
         /bin/rm -rf \${enkfGDAS_atmos}/mem???/*.txt
         if [ \${AERODA} = "TRUE" ]; then
             /bin/rm -rf \${enkfGDAS_atmos}/mem???/RESTART/\${cyc1prefix}.fv_tracer_aeroanl_tmp.res.tile?.nc
+            /bin/rm -rf \${enkfGDAS_atmos}/ensmean/RESTART/\${cyc1prefix}.fv_tracer_aeroanl_tmp.res.tile?.nc
         fi
 
         enkfBakup_diag=\${bakupDir}/enkfgdas.\${cycYMD}/\${cycH}/diag/
@@ -285,9 +286,9 @@ if [ -s \${cntlGDAS} ]; then
 
     if [ \${ERR} -eq 0 ]; then
         echo "HTAR is successful at \${cycN}"
-	#/bin/rm -rf \${enkfGDAS}
-	#/bin/rm -rf \${cntlGDAS}
-	#/bin/rm -rf \${tmpDiag}
+	/bin/rm -rf \${enkfGDAS}
+	/bin/rm -rf \${cntlGDAS}
+	/bin/rm -rf \${tmpDiag}
     else
         echo "HTAR failed at \${cycN}"
         echo \${cycN} >> \${RECORDDIR}/\${HPSSRECORD}
