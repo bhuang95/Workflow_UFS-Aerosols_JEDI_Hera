@@ -158,6 +158,13 @@ done
 # Link executable
 ${NLN} ${JEDIEXE} ${DATA}/fv3jedi_hofx_nomodel.x
 
+# Link yaml and output file
+[[ -f ${HOFXDIR}/${HOFXOUT} ]] && rm -rf ${HOFXDIR}/${HOFXOUT}
+[[ -f ${HOFXDIR}/hofx_nomodel_aero_${AODTYPE}.yaml ]] && rm -rf ${HOFXDIR}/hofx_nomodel_aero_${AODTYPE}.yaml
+
+${NLN} ${HOFXDIR}/${HOFXOUT} ${DIAGDIR}/${HOFXOUT}
+${NLN} ${HOFXDIR}/hofx_nomodel_aero_${AODTYPE}.yaml ${DATA}/hofx_nomodel_aero_${AODTYPE}.yaml
+
 # Gnerate control yaml block
 STABLK="  
 state:
@@ -258,27 +265,27 @@ ${OBSBLK}
 EOF
 
 cat ${DATA}/hofx_nomodel_aero_${AODTYPE}.yaml
+ERR=$?
 
-source ${HOMEjedi}/jedi_module_base.hera.sh
 #source /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/MISC/codeDev/JEDI/jedi-bundle/20230113/build/jedi_module_base.hera.sh
-export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEjedi}/lib/"
-export OMP_NUM_THREADS=1
-ulimit -s unlimited
-
-srun --export=all -n ${NCORES} ./fv3jedi_hofx_nomodel.x "./hofx_nomodel_aero_${AODTYPE}.yaml" "./hofx_nomodel_aero.log"
-ERR=$?
-if [ ${ERR} -ne 0 ]; then
-   echo "JEDI hofx failed and exit the program!!!"
-   exit ${ERR}
-fi
-
-${NMV} ${DIAGDIR}/${HOFXOUT} ${HOFXDIR}/${HOFXOUT}
-${NCP} ${DATA}/hofx_nomodel_aero_${AODTYPE}.yaml ${HOFXDIR}/
-
-ERR=$?
-if [ ${ERR} -ne 0 ]; then
-   echo "Moving hofx failed and exit the program!!!"
-   exit ${ERR}
-fi
+#export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOMEjedi}/lib/"
+#export OMP_NUM_THREADS=1
+#ulimit -s unlimited
+#
+#srun --export=all -n ${NCORES} ./fv3jedi_hofx_nomodel.x "./hofx_nomodel_aero_${AODTYPE}.yaml" "./hofx_nomodel_aero.log"
+#ERR=$?
+#if [ ${ERR} -ne 0 ]; then
+#   echo "JEDI hofx failed and exit the program!!!"
+#   exit ${ERR}
+#fi
+#
+##${NMV} ${DIAGDIR}/${HOFXOUT} ${HOFXDIR}/${HOFXOUT}
+##${NCP} ${DATA}/hofx_nomodel_aero_${AODTYPE}.yaml ${HOFXDIR}/
+#
+#ERR=$?
+#if [ ${ERR} -ne 0 ]; then
+#   echo "Moving hofx failed and exit the program!!!"
+#   exit ${ERR}
+#fi
 
 exit ${ERR}
