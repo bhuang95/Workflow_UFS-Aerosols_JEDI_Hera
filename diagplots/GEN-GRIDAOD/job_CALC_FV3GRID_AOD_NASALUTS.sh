@@ -19,7 +19,7 @@ CYCINC=6
 TOPRUNDIR=${TOPRUNDIR:-"/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/"}
 HOMEgfs=${HOMEgfs:-"/home/Bo.Huang/JEDI-2020/expRuns/exp_UFS-Aerosols/cycExp_ATMA_warm/"}
 HOMEjedi=${HOMEjedi:-"/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/fv3-bundle/V20230312/build"}
-DATA=${DATA:-${TMPDIR}/gocart_aod_fv3_mpi.$$}
+DATA=${DATA:-${TMPDIR}/gocart_aod_fv3_mpi}
 AODTYPE=${AODTYPE:-"NOAA_VIIRS"}
 COMPONENT=${COMPONENT:-"atmos"}
 NDATE=${NDATE:-"/scratch2/NCEPDEV/nwprod/NCEPLIBS/utils/prod_util.v1.1.0/exec/ndate"}
@@ -87,6 +87,7 @@ for EXPNAME in ${EXPNAMES}; do
                     FTRACER=${CDATEPRE}.${TRCR}.res.tile${itile}.nc
 	            FAOD=${CDATEPRE}.fv_aod_LUTs_${isensorID}.${TRCR}.res.tile${itile}.nc
 
+[[ -f ${DATA}/gocart_aod_fv3_mpi.nl ]] && ${NRM} ${DATA}/gocart_aod_fv3_mpi.nl
 cat << EOF > ${DATA}/gocart_aod_fv3_mpi.nl 	
 &record_input
  input_dir = "${INDATADIR}"
@@ -119,8 +120,8 @@ ERR=$?
 if [ ${ERR} -ne 0 ]; then
     echo "gocart_aod_fv3_mpi_LUTs failed an exit!!!"
     exit 1
-else
-    /bin/rm -rf ${DATA}/gocart_aod_fv3_mpi.nl
+#else
+#    /bin/rm -rf ${DATA}/gocart_aod_fv3_mpi.nl
 fi
 done # end of itile-loop
 done # end of isensorID-loop
