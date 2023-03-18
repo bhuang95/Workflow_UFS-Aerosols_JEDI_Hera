@@ -30,7 +30,7 @@
 
 	<!-- Model configuration -->
 	<!ENTITY SDATE "201710060000">
-	<!ENTITY EDATE "201710151800">
+	<!ENTITY EDATE "201710301800">
 	<!ENTITY NET "gfs">
 	<!ENTITY GFSVERSION "V14"> 
 		<!-- This will matter for INCREMENTS_TO_ZERO in congfig.base-->
@@ -470,6 +470,8 @@
 	<envar><name>EDATE</name><value>&EDATE;</value></envar>
 	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
 	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
+	<envar><name>AERODA</name><value>&AERODA;</value></envar>
+	<envar><name>ENSRUN</name><value>&ENSRUN;</value></envar>
 	<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
 	<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
 	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>

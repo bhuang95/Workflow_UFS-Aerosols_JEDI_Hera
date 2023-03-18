@@ -380,7 +380,17 @@ export MAKE_NSSTBUFR="NO"
 export MAKE_ACFTBUFR="NO"
 
 # Analysis increments to zero in CALCINCEXEC
-export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc','delp_inc','delz_inc'"
+if [ ${GFSVERSION} = "V14" ]; then
+    export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc','delp_inc','delz_inc'"
+else
+    export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"
+    echo "This is a default INCREMENTS_TO_ZERO in the workflow.
+          Please check the resulting incremnet files and zero 
+	  out variables with infinit or missing values. Otherwise, 
+	  the model warm-start run will fail. Exit for warning and
+	  you may uncommented "exit 1" below to proceed."
+    exit 1
+fi
 
 # Stratospheric increments to zero
 export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc'"

@@ -11,9 +11,9 @@ export layout_envar="4,6"  #"2,4"
 export io_layout_envar="1,1"  # Don't Change
 export ncore_envar=144         # ncore_anal=6*l1*l2 (l1, l2 in layout_anal)
 
-export layout_letkf="4,6"  #"2,4" 
+export layout_letkf="6,8"  #"2,4" 
 export io_layout_letkf="1,1"  # Don't Change
-export ncore_letkf=144        # ncore_anal=6*l1*l2 (l1, l2 in layout_anal)
+export ncore_letkf=288         # ncore_anal=6*l1*l2 (l1, l2 in layout_anal)
 
 export layout_hofx="2,4"  #"2,2" 
 export io_layout_hofx="1,1"  # Don't Change

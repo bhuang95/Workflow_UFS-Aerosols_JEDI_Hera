@@ -8,7 +8,7 @@
 	NOTES:
 		This workflow was automatically generated at 2023-01-27 18:29:13.198072
 	-->
-	<!ENTITY PSLOT "AeroDA-1C192-20C192-201710">
+	<!ENTITY PSLOT "FreeRun-1C192-0C192-201710">
 	<!--HOMEgfs is the top direcotry of the workflow and independent from PSLOT defined as a specific experiment name-->
 	<!ENTITY HOMEgfs "/home/Bo.Huang/JEDI-2020/expRuns/exp_UFS-Aerosols/cycExp_ATMA_warm/">
 	<!ENTITY HOMEjedi "/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/fv3-bundle/V20230312/build">
@@ -47,8 +47,8 @@
 
 	<!-- JEDI configuration -->
 	<!ENTITY AODTYPE "NOAA_VIIRS">
-	<!ENTITY AERODA "TRUE">
-	<!ENTITY ENSRUN "TRUE">
+	<!ENTITY AERODA "FALSE">
+	<!ENTITY ENSRUN "FALSE">
 
 	<!-- Retrieve Met -->
 	<!ENTITY NMEMSGRPS "01-40">
@@ -85,21 +85,21 @@
 
 	<!ENTITY QUEUE_ANAL_GDAS     "&QUEUE;">
 	<!ENTITY WALLTIME_ANAL_GDAS  "00:29:00">
-	<!ENTITY RESOURCES_ANAL_GDAS "12:ppn=12:tpp=1">
+	<!ENTITY RESOURCES_ANAL_GDAS "9:ppn=16:tpp=1">
 	<!ENTITY MEMORIES_ANAL_GDAS "80000M">
 	<!ENTITY NATIVE_ANAL_GDAS    "--export=NONE">
-
-	<!ENTITY QUEUE_ANAL_ENKF_GDAS     "&QUEUE;">
-	<!ENTITY WALLTIME_ANAL_ENKF_GDAS  "00:59:00">
-	<!ENTITY RESOURCES_ANAL_ENKF_GDAS "9:ppn=16:tpp=1">
-	<!ENTITY MEMORIES_ANAL_ENKF_GDAS "80000M">
-	<!ENTITY NATIVE_ANAL_ENKF_GDAS    "--export=NONE">
 
 	<!ENTITY QUEUE_DIAG_GDAS     "&QUEUE;">
 	<!ENTITY WALLTIME_DIAG_GDAS  "00:29:00">
 	<!ENTITY RESOURCES_DIAG_GDAS "4:ppn=12:tpp=1">
 	<!ENTITY MEMORIES_DIAG_GDAS "100G">
 	<!ENTITY NATIVE_DIAG_GDAS    "--export=NONE">
+
+	<!ENTITY QUEUE_ANAL_ENKF_GDAS     "&QUEUE;">
+	<!ENTITY WALLTIME_ANAL_ENKF_GDAS  "00:59:00">
+	<!ENTITY RESOURCES_ANAL_ENKF_GDAS "18:ppn=16:tpp=1">
+	<!ENTITY MEMORIES_ANAL_ENKF_GDAS "100G">
+	<!ENTITY NATIVE_ANAL_ENKF_GDAS    "--export=NONE">
 
 	<!ENTITY QUEUE_FCST_GDAS     "&QUEUE;">
 	<!ENTITY WALLTIME_FCST_GDAS  "00:29:00">
@@ -170,7 +170,7 @@
 
 	<command>&JOBS_DIR;/calc_anlinc.sh</command>
 
-	<jobname><cyclestr>&PSLOT;_gdascalcinc_@H</cyclestr></jobname>
+	<jobname><cyclestr>&PSLOT;_calcinc_@H</cyclestr></jobname>
 
 	<queue>&QUEUE;</queue>
 	<partition>&PARTITION;</partition>
@@ -180,7 +180,7 @@
 	<memory>&MEMORIES_CALCINC_GDAS;</memory>
 	<native>&NATIVE_CALCINC_GDAS;</native>
 
-	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/gdascalcinc.log</cyclestr></join>
+	<join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/calcinc.log</cyclestr></join>
 
 	<envar><name>METRETDIR</name><value>&METRETDIR;</value></envar>
 	<envar><name>DATAROOT</name><value><cyclestr>&DATAROOTTOP;/@Y@m@d@H</cyclestr></value></envar>
@@ -202,6 +202,7 @@
 </task>
 
 
+<!--
 <metatask name="gdasenscalcinc">
 
 	<var name="grp">01 02 03 04 05 06 07 08 09 10</var>
@@ -243,7 +244,9 @@
 	</task>
 
 </metatask>
+-->
 
+<!--
 <task name="gdasaeroanlrun" cycledefs="gdas" maxtries="&MAXTRIES;">
 
 	<command>&JOBS_DIR;/aeroanlrun.sh</command>
@@ -286,14 +289,13 @@
 
 
 	<dependency>
-		<or>
-			<taskdep task="gdasarch" cycle_offset="-06:00:00"/>
-			<not><cycleexistdep cycle_offset="-06:00:00"/></not>
-		</or>
+		<taskdep task="gdasarch" cycle_offset="-06:00:00"/>
 	</dependency>
 
 </task>
+-->
 
+<!--
 <task name="gdasaeroenkfrun" cycledefs="gdas" maxtries="&MAXTRIES;">
 
 	<command>&JOBS_DIR;/aeroanlenkf.sh</command>
@@ -335,17 +337,16 @@
 
 
 	<dependency>
-		<or>
-			<taskdep task="gdasarch" cycle_offset="-06:00:00"/>
-			<not><cycleexistdep cycle_offset="-06:00:00"/></not>
-		</or>
+		<taskdep task="gdasarch" cycle_offset="-06:00:00"/>
 	</dependency>
 
 </task>
+-->
 
+<!--
 <metatask name="gdasaeroanlrce">
 
-	<var name="grp">01 02 03 04 05 06 07 08 09 10</var>
+	<var name="grp">01 02 03 04 05 06 07 08</var>
 
 	<task name="gdasaeroanlrce#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
 
@@ -392,11 +393,13 @@
 			</and>
 		</dependency>
 	</task>
+
 </metatask>
+-->
 
 <metatask name="gdasaerodiag">
 
-	<var name="grp">01 02 03 04 05 06 07 08 09 10</var>
+	<var name="grp">01</var>
 
 	<task name="gdasaerodiag#grp#" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;">
 
@@ -440,7 +443,10 @@
 		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 		<envar><name>ENSGRP</name><value>#grp#</value></envar>
 		<dependency>
-			<metataskdep metatask="gdasaeroanlrce"/>
+			<or>
+				<not><cycleexistdep cycle_offset="-06:00:00"/></not>
+				<taskdep task="gdasarch" cycle_offset="-06:00:00"/>
+			</or>
 		</dependency>
 	</task>
 
@@ -464,8 +470,6 @@
 	<envar><name>EDATE</name><value>&EDATE;</value></envar>
 	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
 	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
-	<envar><name>AERODA</name><value>&AERODA;</value></envar>
-	<envar><name>ENSRUN</name><value>&ENSRUN;</value></envar>
 	<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
 	<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
 	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
@@ -485,13 +489,13 @@
 	<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 
 	<dependency>
-		<and>
+		<or>
 			<taskdep task="gdascalcinc"/>
-			<taskdep task="gdasaeroanlrun"/>
-		</and>
+		</or>
 	</dependency>
 </task>
 
+<!--
 <metatask name="gdasefmn">
 
 	<var name="grp">01 02 03 04 05 06 07 08 09 10</var>
@@ -515,8 +519,6 @@
 		<envar><name>CASE</name><value>&CASE;</value></envar>
 		<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
 		<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
-		<envar><name>AERODA</name><value>&AERODA;</value></envar>
-		<envar><name>ENSRUN</name><value>&ENSRUN;</value></envar>
 		<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
 		<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
 		<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
@@ -535,14 +537,18 @@
 		<envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
 		<envar><name>ENSGRP</name><value>#grp#</value></envar>
 		<dependency>
-			<and>
+			<or>
+				<not><cycleexistdep cycle_offset="-06:00:00"/></not>
 				<metataskdep metatask="gdasenscalcinc"/>
 				<metataskdep metatask="gdasaeroanlrce"/>
-			</and>
+			</or>
 		</dependency>
 	</task>
-</metatask>
 
+</metatask>
+-->
+
+<!--
 <metatask name="gdasemean">
 
 	<var name="itile">1 2 3 4 5 6</var>
@@ -592,10 +598,11 @@
 	</task>
 
 </metatask>
+-->
 
 <task name="gdasarch" cycledefs="gdas_half,gdas" maxtries="&MAXTRIES;" final="true">
 
-	<command>&JOBS_DIR;/arch2hpss_aeroda.sh</command>
+	<command>&JOBS_DIR;/arch2hpss_noda.sh</command>
 
 	<jobname><cyclestr>&PSLOT;_gdasarch_@H</cyclestr></jobname>
 	<account>&ACCOUNT;</account>
@@ -635,8 +642,6 @@
 	<dependency>
 		<and>
 			<taskdep task="gdasfcst"/>
-			<metataskdep metatask="gdasefmn"/>
-			<metataskdep metatask="gdasemean"/>
 			<metataskdep metatask="gdasaerodiag"/>
 		</and>
 	</dependency>
