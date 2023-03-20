@@ -13,18 +13,22 @@ module load nco
 
 set -x 
 
-ANL="MERRA2" #"CAMSIRA"
-ANLPRE="MERRA2_400.inst3_2d_gas_Nx." #"cams_aods_"
-ANLSUF=".nc4" #".nc"
-OUTANLPRE="merra2" #camsira
+ANL="MERRA2" 
+#ANL="CAMSIRA"
+ANLPRE="MERRA2_400.inst3_2d_gas_Nx." 
+#ANLPRE="cams_aods_"
+ANLSUF=".nc4" 
+#ANLSUF=".nc"
+OUTANLPRE="merra2" 
+#UTANLPRE="camsira"
 HOURS="00 06 12 18" # Dont change the elemen order of this variable.
-SDATE=2017100600
-EDATE=2017100700
+SDATE=2017100700
+EDATE=2017103100
 CYCINC=24
 NDATE=${NDATE:-"/scratch2/NCEPDEV/nwprod/NCEPLIBS/utils/prod_util.v1.1.0/exec/ndate"}
 
-TOPINDIR=/scratch1/BMC/gsd-fv3-dev/MAPP_2018/pagowski/DATA/MODEL/m2/akbkll
-#/scratch1/BMC/gsd-fv3-dev/MAPP_2018/pagowski/DATA/MODEL/cams/pll_orig
+#TOPINDIR=/scratch1/BMC/gsd-fv3-dev/MAPP_2018/pagowski/DATA/MODEL/m2/akbkll
+TOPINDIR=/scratch1/BMC/gsd-fv3-dev/MAPP_2018/pagowski/DATA/MODEL/cams/pll_orig
 TOPOUTDIR=/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/LatLonGrid/${ANL}/AOD
 
 if [ ${ANL} = 'MERRA2' ]; then

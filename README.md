@@ -1,19 +1,16 @@
-This workflow is used to run cycled AOD assimilatin expeirments using JEDI-based 3DEnVar AOD
-assimilation system and NOAA's UFS-Aerosols model.
-
-# Initially created by Bo Huang (Bo.Huang@noaa.gov) on 03/19, 2023
+This workflow is used to run cycled AOD assimilatin expeirments using JEDI-based 3DEnVar AOD assimilation system and NOAA's UFS-Aerosols model (initially created by Bo Huang (Bo.Huang@noaa.gov) on 03/19, 2023)
 
 1. dr-work-AeroDA-1C192-20C192-201710/AeroDA-1C192-20C192-201710.xml
    - Run cycled JEDI-based 3DEnVar AOD assimilation experiments
-     - **Task gdasretrievemet:** Download preprocessed GDAS control and EnKF Met analysis from HPSS and store them at ${ROTDIR}/RetrieveGDAS. Now only available in 10/01-11/30, 2017
+     - **Task gdasretrievemet:** Download preprocessed GDAS control and EnKF Met analysis from HPSS and store them at ROTDIR/RetrieveGDAS. Now only available in 10/01-11/30, 2017
      - **Task gdascalcinc and MetaTask gdasenscalcinc:** Calculate the control and ensemle Met analysis increment
-     - **Task gdasaeroanlrun:** Perform the 3DEnVar AOD assimilation and generate ${ROTDIR}/gdas.yyyymmdd/hh/atmos/RESTART/YYYYMMDD.HH0000.fv_tracer_aeroanl.res.tile?.nc
-     - **Task gdasaeroenkfrun:** Perform the EnKF AOD assimilatin and generate ${ROTDIR}/enkfgdas.yyyymmdd/hh/atmos/mem???/RESTART/YYYYMMDD.HH0000.fv_tracer_aeroanl_tmp.res.tile1.nc and their mean at ensmean
-     - **MetaTask gdasaeroanlrce:** Finalize and recenter EnKF aeroaol analysis as ${ROTDIR}/enkfgdas.yyyymmdd/hh/atmos/mem???/RESTART/YYYYMMDD.HH0000.fv_tracer_aeroanl.res.tile1.nc and YYYYMMDD.HH0000.fv_tracer_raeroanl.res.tile1.nc
+     - **Task gdasaeroanlrun:** Perform the 3DEnVar AOD assimilation and generate ROTDIR/gdas.yyyymmdd/hh/atmos/RESTART/YYYYMMDD.HH0000.fv_tracer_aeroanl.res.tile?.nc (YYYYDDMMHH = yyyymmddhh + 6 hours)
+     - **Task gdasaeroenkfrun:** Perform the EnKF AOD assimilatin and generate ROTDIR/enkfgdas.yyyymmdd/hh/atmos/mem???/RESTART/YYYYMMDD.HH0000.fv_tracer_aeroanl_tmp.res.tile1.nc and their mean at ensmean
+     - **MetaTask gdasaeroanlrce:** Finalize and recenter EnKF aeroaol analysis as ROTDIR/enkfgdas.yyyymmdd/hh/atmos/mem???/RESTART/YYYYMMDD.HH0000.fv_tracer_aeroanl.res.tile1.nc and YYYYMMDD.HH0000.fv_tracer_raeroanl.res.tile1.nc
      - **MetaTask gdasaerodiag:** Calculate hofx of control and ensemble background and analysias and output them in the diag directory
-     - **Task gdasfcst and MetaTask gdasefmn:** Run control and ensemble background (6-hour) forecast.
+     - **Task gdasfcst and MetaTask gdasefmn:** Run control and ensemble background (6-hour) forecast
      - **Task gdasemean:** Calculate background ensembl mean
-     - **Task gdasarch:** Clean and backup data to HPSS by creating a sbatch job at ${ROTDIR}/HERA2HPSS. Move controlRESTART and diag files to ${ROTDIR}/../dr-databack for fugure diagnostics. 
+     - **Task gdasarch:** Clean and backup data to HPSS by creating a sbatch job at ROTDIR/HERA2HPSS. Move control RESTART and diag files to ROTDIR/../dr-data-backup for following diagnostics. 
 
    - Description of required parameters to config your own experiments
      - PSLOT: experiment name

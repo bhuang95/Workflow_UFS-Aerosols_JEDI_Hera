@@ -1,15 +1,15 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH -t 00:30:00
-#SBATCH -q debug
+#SBATCH -t 01:30:00
+#SBATCH -q batch
 #SBATCH -A chem-var
 #SBATCH -J calc_aeronet_hfx
 #SBATCH -D ./
 #SBATCH -o /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/calc_aeronet_hfx.log
 #SBATCH -e /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/calc_aeronet_hfx.log
 
-SDATE=2017100600
-EDATE=2017101118
+SDATE=2017101200
+EDATE=2017101818
 CYCINC=6
 TOPEXPDIR='/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/'
 EXPNAMES='FreeRun-1C192-0C192-201710 AeroDA-1C192-20C192-201710'

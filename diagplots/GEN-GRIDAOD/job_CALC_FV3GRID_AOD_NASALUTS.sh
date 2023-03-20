@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH -t 00:30:00
-##SBATCH -p batch
-#SBATCH -q debug
+#SBATCH -t 01:30:00
+##SBATCH -p hera
+#SBATCH -q batch
 #SBATCH -A chem-var
 #SBATCH -J fgat
 #SBATCH -D ./
@@ -13,8 +13,8 @@ TMPDIR="/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/MISC/UFS-A
 FREERUNEXP="FreeRun-1C192-0C192-201710"
 AERODAEXP="AeroDA-1C192-20C192-201710"
 EXPNAMES="${FREERUNEXP} ${AERODAEXP}"
-SDATE=2017100600
-EDATE=2017100618
+SDATE=2017100700
+EDATE=2017101818
 CYCINC=6
 TOPRUNDIR=${TOPRUNDIR:-"/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/"}
 HOMEgfs=${HOMEgfs:-"/home/Bo.Huang/JEDI-2020/expRuns/exp_UFS-Aerosols/cycExp_ATMA_warm/"}
