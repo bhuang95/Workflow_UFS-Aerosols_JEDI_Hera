@@ -14,12 +14,12 @@ module load anaconda/latest
 curdir=`pwd`
 aod=NOAA-VIIRS
 cycst=2017100600
-cyced=2017101018
+cyced=2017101818
 topexpdir=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols
 topplotdir=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/AeroDA-1C192-20C192-201710/diagplots/INNOV-STATS/
 nodaexp=FreeRun-1C192-0C192-201710
 daexp=AeroDA-1C192-20C192-201710
-spinupcnts=5
+spinupcnts=12 # number of cycles
 rundir=${topplotdir}/${aod}-${cycst}-${cyced}/
 #/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/AeroDA-1C192-20C192-201710/diagplots/HOFX-STATS/
 expnames="
