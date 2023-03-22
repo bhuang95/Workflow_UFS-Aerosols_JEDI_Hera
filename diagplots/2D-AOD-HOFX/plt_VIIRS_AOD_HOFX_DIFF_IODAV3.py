@@ -91,7 +91,7 @@ def plot_map_satter_aod_hfx(lons, lats, obs, hfx, hfx2obs, cmap_aod, cmap_bias, 
         ax=fig.add_subplot(3,1,ipt+1)
         if ipt==0:
             data=obs
-            tstr='(a) VIIRS/S-NPP 550 nm AOD retrievals'
+            tstr=f"(a) VIIRS/S-NPP 550 nm AOD at {cycpre}"
             vvend=vvend1
             cmap=ccmap1
             norm=norm1

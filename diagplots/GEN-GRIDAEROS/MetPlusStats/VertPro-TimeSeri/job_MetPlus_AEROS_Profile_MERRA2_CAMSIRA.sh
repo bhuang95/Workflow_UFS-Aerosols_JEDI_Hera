@@ -11,20 +11,21 @@ CURDIR=`pwd`
 METRUN=met_grid_stat_anl
 OUTDIR=/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/LatLonGrid/metPlusStats-AEROS
 
-FREERUNEXP="FreeRun-1C192-0C192-201710"
-AERODAEXP="AeroDA-1C192-20C192-201710"
+MERRA2EXP="MERRA2"
+CAMSIRAEXP="CAMSIRA"
 
 # BASE: The path to METplus package
 # INPUTBASE: the path saved dataset files
-export RUNNAME=${FREERUNEXP}
-export FCSTRUNNAME=${FREERUNEXP}
-export FCSTFIELD="cntlBkg"
-export MODELNAME="FreeRun-cntlBkg"
-export OBSRUNNAME=${FREERUNEXP}
-export OBSFIELD="cntlBkg"
-export OBSNAME="FreeRun-cntlBkg"
+export RUNNAME=${MERRA2EXP}
+export FCSTRUNNAME=${MERRA2EXP}
+export FCSTFIELD="AOD"
+export MODELNAME="MERRA2"
+export OBSRUNNAME=${CAMSIRAEXP}
+export OBSFIELD="AOD"
+export OBSNAME="CAMSiRA"
 export BASE=/home/Bo.Huang/JEDI-2020/miscScripts-home/METPlus/METplus-AerosoDiag/METplus_pkg/
-export INPUTBASE=/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/LatLonGrid/FV3/AEROS/
+export INPUTBASE_AEROS=/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/LatLonGrid/FV3/AEROS/
+export INPUTBASE_AOD=/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/LatLonGrid/
 export RUNSCRIPT=/home/Bo.Huang/JEDI-2020/miscScripts-home/METPlus/runScripts/${METRUN}.sh
 
 export SDATE=2017100600
@@ -40,53 +41,89 @@ GRID_DEG="1.0deg"
 
 WRKDTOP=${OUTDIR}/${FCSTRUNNAME}_${FCSTFIELD}-${OBSRUNNAME}_${OBSFIELD}-${GRID_DEG}
 
+FCST_AEROS_SRC=${INPUTBASE_AEROS}/${FCSTRUNNAME}/${FCSTFIELD}/
+FCST_AEROS_TMP=${WRKDTOP}/FCST_AEROS_DATA
+FCST_AEROS_PRE=fv3_aeros_
+FCST_AEROS_SUF=_pll.nc
+OBS_AEROS_SRC=${INPUTBASE_AEROS}/${OBSRUNNAME}/${OBSFIELD}/
+OBS_AEROS_TMP=${WRKDTOP}/OBS_AEROS_DATA
+OBS_AEROS_PRE=fv3_aeros_
+OBS_AEROS_SUF=_pll.nc
 
-FCST_SRC=${INPUTBASE}/${FCSTRUNNAME}/${FCSTFIELD}/
-OBS_SRC=${INPUTBASE}/${OBSRUNNAME}/${OBSFIELD}/
-FCST_TMP=${WRKDTOP}/FCST_DATA
-OBS_TMP=${WRKDTOP}/OBS_DATA
+FCST_AOD_SRC=${INPUTBASE_AOD}/${FCSTRUNNAME}/${FCSTFIELD}/
+FCST_AOD_TMP=${WRKDTOP}/FCST_AOD_DATA
+FCST_AOD_PRE=merra2_aods_
+FCST_AOD_SUF=_pll.nc
+OBS_AOD_SRC=${INPUTBASE_AOD}/${OBSRUNNAME}/${OBSFIELD}/
+OBS_AOD_TMP=${WRKDTOP}/OBS_AOD_DATA
+OBS_AOD_PRE=camsira_aods_
+OBS_AOD_SUF=_pll.nc
 
-[[ ! -d ${FCST_TMP} ]] && mkdir -p ${FCST_TMP}
-[[ ! -d ${OBS_TMP} ]] && mkdir -p ${OBS_TMP}
+VARIABLES="AOD"
 
-rm -rf ${FCST_TMP}/fcst*.nc
-rm -rf ${FCST_TMP}/obs*.nc
+for VARIABLE in ${VARIABLES}; do 
+    if [ ${VARIABLE} = "AEROS" ]; then
+        FCST_SRC=${FCST_AEROS_SRC}
+        FCST_TMP=${FCST_AEROS_TMP}
+        FCST_PRE=${FCST_AEROS_PRE}
+        FCST_SUF=${FCST_AEROS_SUF}
+        OBS_SRC=${OBS_AEROS_SRC}
+        OBS_TMP=${OBS_AEROS_TMP}
+        OBS_PRE=${OBS_AEROS_PRE}
+        OBS_SUF=${OBS_AEROS_SUF}
+    elif [ ${VARIABLE} = "AOD" ]; then
+        FCST_SRC=${FCST_AOD_SRC}
+        FCST_TMP=${FCST_AOD_TMP}
+        FCST_PRE=${FCST_AOD_PRE}
+        FCST_SUF=${FCST_AOD_SUF}
+        OBS_SRC=${OBS_AOD_SRC}
+        OBS_TMP=${OBS_AOD_TMP}
+        OBS_PRE=${OBS_AOD_PRE}
+        OBS_SUF=${OBS_AOD_SUF}
+    else
+        echo "Please define FIELDS accordingly and exit now"
+	exit 1
+    fi
+   
 
-CDATE=${SDATE}
-while [ ${CDATE} -le ${EDATE} ]; do
-    CY=${CDATE:0:4}
-    CM=${CDATE:4:2}
-    CD=${CDATE:6:2}
-    CH=${CDATE:8:2}
+    [[ ! -d ${FCST_TMP} ]] && mkdir -p ${FCST_TMP}
+    [[ ! -d ${OBS_TMP} ]] && mkdir -p ${OBS_TMP}
 
-    FCST_DATA=${FCST_SRC}/${CY}/${CY}${CM}/${CY}${CM}${CD}/fv3_aeros_${CDATE}_pll.nc
-    OBS_DATA=${OBS_SRC}/${CY}/${CY}${CM}/${CY}${CM}${CD}/fv3_aeros_${CDATE}_pll.nc
+    rm -rf ${FCST_TMP}/fcst*.nc
+    rm -rf ${OBS_TMP}/obs*.nc
 
-    ln -sf ${FCST_DATA} ${FCST_TMP}/fcst_${CDATE}.nc
-    ln -sf ${OBS_DATA} ${OBS_TMP}/obs_${CDATE}.nc
-    CDATE=$(${NDATE} ${INC_H} ${CDATE})
+    CDATE=${SDATE}
+    while [ ${CDATE} -le ${EDATE} ]; do
+        CY=${CDATE:0:4}
+        CM=${CDATE:4:2}
+        CD=${CDATE:6:2}
+        CH=${CDATE:8:2}
+
+        FCST_DATA=${FCST_SRC}/${CY}/${CY}${CM}/${CY}${CM}${CD}/${FCST_PRE}${CDATE}${FCST_SUF}
+        OBS_DATA=${OBS_SRC}/${CY}/${CY}${CM}/${CY}${CM}${CD}/${OBS_PRE}${CDATE}${OBS_SUF}
+
+        ln -sf ${FCST_DATA} ${FCST_TMP}/fcst_${CDATE}.nc
+        ln -sf ${OBS_DATA} ${OBS_TMP}/obs_${CDATE}.nc
+        CDATE=$(${NDATE} ${INC_H} ${CDATE})
+    done
 done
-
-
 # set fcst and obs varibales
-export FCSTDIR="${FCST_TMP}"
-export FCSTINPUTTMP_aeros="fcst_{init?fmt=%Y%m%d%H}.nc"
-export FCSTLEV_aeros='"(0,0,*,*)","(0,1,*,*)","(0,2,*,*)","(0,3,*,*)","(0,4,*,*)","(0,5,*,*)","(0,6,*,*)","(0,7,*,*)","(0,8,*,*)"'
-export FCSTLEV2_aeros='"0,0,*,*","0,1,*,*","0,2,*,*","0,3,*,*","0,4,*,*","0,5,*,*","0,6,*,*","0,7,*,*","0,8,*,*"'
-
-export OBSDIR="${OBS_TMP}"
-export OBSINPUTTMP_aeros="obs_{init?fmt=%Y%m%d%H}.nc"
-export OBSLEV_aeros='"(0,0,*,*)","(0,1,*,*)","(0,2,*,*)","(0,3,*,*)","(0,4,*,*)","(0,5,*,*)","(0,6,*,*)","(0,7,*,*)","(0,8,*,*)"'
-export OBSLEV2_aeros='"0,0,*,*","0,1,*,*","0,2,*,*","0,3,*,*","0,4,*,*","0,5,*,*","0,6,*,*","0,7,*,*","0,8,*,*"'
-
+#export INPUTBASE=${INPUTBASE_AEROS}
+#export FCSTDIR="${FCST_AEROS_TMP}"
+#export FCSTINPUTTMP_aeros="fcst_{init?fmt=%Y%m%d%H}.nc"
+#export FCSTLEV_aeros='"(0,0,*,*)","(0,1,*,*)","(0,2,*,*)","(0,3,*,*)","(0,4,*,*)","(0,5,*,*)","(0,6,*,*)","(0,7,*,*)","(0,8,*,*)"'
+#export FCSTLEV2_aeros='"0,0,*,*","0,1,*,*","0,2,*,*","0,3,*,*","0,4,*,*","0,5,*,*","0,6,*,*","0,7,*,*","0,8,*,*"'
+#
+#export OBSDIR="${OBS_AEROS_TMP}"
+#export OBSINPUTTMP_aeros="obs_{init?fmt=%Y%m%d%H}.nc"
+#export OBSLEV_aeros='"(0,0,*,*)","(0,1,*,*)","(0,2,*,*)","(0,3,*,*)","(0,4,*,*)","(0,5,*,*)","(0,6,*,*)","(0,7,*,*)","(0,8,*,*)"'
+#export OBSLEV2_aeros='"0,0,*,*","0,1,*,*","0,2,*,*","0,3,*,*","0,4,*,*","0,5,*,*","0,6,*,*","0,7,*,*","0,8,*,*"'
+#
 
 #export FCSTINPUTTMP_int="fv3_aeros_int_{init?fmt=%Y%m%d%H}_pll.nc"
 #export FCSTLEV_int='"(0,0,*,*)"'
 #export FCSTLEV2_int='"0,0,*,*"'
 
-#export FCSTINPUTTMP_aods="fv3_aods_{init?fmt=%Y%m%d%H}_ll.nc"
-#export FCSTLEV_aods='"(0,0,*,*)"'
-#export FCSTLEV2_aods='"0,0,*,*"'
 
 #export OBSNAME="CAMS"
 #export OBSDIR=$INPUTBASE/CAMS//pll
@@ -134,7 +171,7 @@ export OBSLEV2_aeros='"0,0,*,*","0,1,*,*","0,2,*,*","0,3,*,*","0,4,*,*","0,5,*,*
 
 nvars=18
 FCSTVARS=(DUSTFINE DUSTMEDIUM DUSTCOARSE DUSTTOTAL
-          SEASFINE SEASMEDIUM SEASCOARSE SEASTOTAL
+         SEASFINE SEASMEDIUM SEASCOARSE SEASTOTAL
 	  OCPHOBIC OCPHILIC BCPHOBIC BCPHILIC CPHOBIC CPHILIC CTOTAL 
 	  NITRATE1 NITRATE2 NITRATE3)
 OBSVARS=${FCSTVARS}
@@ -154,7 +191,7 @@ elif [ -d /scratch1/NCEPDEV/da ]; then
 fi
 
 #Process aerosol species
-nvars=1
+nvars=-1
 for ((ivar=0;ivar<${nvars};ivar++))
 do
     export FCSTVAR=${FCSTVARS[ivar]}
@@ -170,7 +207,7 @@ do
     export OUTPUTBASE=${WRKD}
 
     cd $WRKD
-    /bin/sh $subcmd -a $PROJ_ACCOUNT -p $POPOTS -j $METRUN-${FCSTVAR}-.${OBSVAR} -o ${WRKD}/$METRUN-${FCSTVAR}-${OBSVAR}.out -q debug -t 00:29:00 -r /1 ${RUNSCRIPT}
+    /bin/sh $subcmd -a $PROJ_ACCOUNT -p $POPOTS -j $METRUN-${FCSTVAR}_${OBSVAR} -o ${WRKD}/$METRUN-${FCSTVAR}-${OBSVAR}.out -q debug -t 00:29:00 -r /1 ${RUNSCRIPT}
     #sleep 2
 
     #export FCSTVAR=${FCSTVARS_int[ivar]}
@@ -191,21 +228,26 @@ do
     #sleep 2
 done
 
-
-exit
-
-#export FCSTVAR=aod
+export INPUTBASE=${INPUTBASE_AOD}
+export MSKLIST="FULL NNPAC TROP CONUS EASIA NAFRME RUSC2S SAFRTROP SOCEAN NATL SATL NPAC SPAC INDOCE"
+export FCSTDIR="${FCST_AOD_TMP}"
+export FCSTVAR=AODANA
+export FCSTINPUTTMP="fcst_{init?fmt=%Y%m%d%H}.nc"
+export FCSTLEV='"(0,*,*)"'
+export FCSTLEV2='"0,*,*"'
 #export FCSTINPUTTMP=${FCSTINPUTTMP_aods}
 #export FCSTLEV=${FCSTLEV_aods}
 #export FCSTLEV2=${FCSTLEV2_aods}
-#export OBSVAR=AODANA
-#export OBSINPUTTMP=${OBSINPUTTMP_aods}
-#export OBSLEV=${OBSLEV_aods}
-#export OBSLEV2=${OBSLEV2_aods}
-#export WRKD=${WRKDTOP}/${FCSTVAR}-${OBSVAR}
-#export DATA=$WRKD/tmp
-#export OUTPUTBASE=${WRKD}
-#
-#cd $WRKD
+export OBSDIR="${OBS_AOD_TMP}"
+export OBSVAR=aod550
+export OBSINPUTTMP="obs_{init?fmt=%Y%m%d%H}.nc"
+export OBSLEV='"(0,*,*)"'
+export OBSLEV2='"0,*,*"'
+export WRKD=${WRKDTOP}/${FCSTVAR}-${OBSVAR}
+export DATA=$WRKD/tmp
+export OUTPUTBASE=${WRKD}
+
+cd $WRKD
 ##rm -rf $WRKD/*
-#/bin/sh $subcmd -a $proj_account -p $popts -j $METRUN-${MODELNAME}.${FCSTVAR}-${OBSNAME}.${OBSVAR} -o ${WRKD}/$METRUN-${MODELNAME}.${FCSTVAR}-${OBSNAME}.${OBSVAR}.out -q batch -t 01:29:00 -r /1 ${RUNSCRIPT}
+/bin/sh $subcmd -a $PROJ_ACCOUNT -p $POPOTS -j $METRUN-${FCSTVAR}-${OBSVAR} -o ${WRKD}/$METRUN-${FCSTVAR}-${OBSVAR}.out -q debug -t 00:29:00 -r /1 ${RUNSCRIPT}
+exit 0

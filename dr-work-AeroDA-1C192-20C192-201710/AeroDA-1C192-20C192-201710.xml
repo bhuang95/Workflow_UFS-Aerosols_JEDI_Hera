@@ -64,7 +64,7 @@
 
 	<!-- Machine related entities -->
 	<!ENTITY PARTITION    "hera">
-	<!ENTITY ACCOUNT    "wrf-chem">
+	<!ENTITY ACCOUNT    "chem-var">
 	<!ENTITY QUEUE      "batch">
 	<!ENTITY SCHEDULER  "slurm">
 

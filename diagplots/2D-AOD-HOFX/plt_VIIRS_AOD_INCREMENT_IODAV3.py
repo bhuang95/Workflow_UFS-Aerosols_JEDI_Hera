@@ -91,7 +91,7 @@ def plot_map_satter_inc(lons, lats, obs, anl2bkg, cmap_aod, cmap_bias, titlepre,
         ax=fig.add_subplot(2,1,ipt+1)
         if ipt==0:
             data=obs
-            tstr='(a) VIIRS/S-NPP 550 nm AOD retrievals'
+            tstr=f"(a) VIIRS/S-NPP 550 nm AOD retrievals at {cycpre}"
             vvend=vvend1
             cmap=ccmap1
             norm=norm1

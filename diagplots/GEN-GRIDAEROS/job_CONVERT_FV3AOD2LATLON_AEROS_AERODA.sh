@@ -4,7 +4,7 @@
 ##SBATCH -p batch
 #SBATCH -q debug
 #SBATCH -A chem-var
-#SBATCH -J fvaodtolatlon_AeroDA
+#SBATCH -J fvaerotolatlon_AeroDA
 #SBATCH -D ./
 #SBATCH -o /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/fvaero2latlon_AeroDA.out
 #SBATCH -e /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/fvaero2latlon_AeroDA.out
@@ -17,8 +17,8 @@ FREERUNEXP="FreeRun-1C192-0C192-201710"
 AERODAEXP="AeroDA-1C192-20C192-201710"
 TMPDIR="/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/MISC/UFS-Aerosols/TestScripts/GRID-AERO/${AERODAEXP}"
 EXPNAMES="${AERODAEXP}"
-SDATE=2017100612
-EDATE=2017102118
+SDATE=2017102312
+EDATE=2017102318
 CYCINC=6
 TOPRUNDIR=${TOPRUNDIR:-"/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/"}
 OUTAEROSDIR=${OUTAEROSDIR:-"/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/LatLonGrid/FV3/AEROS"}

@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH -t 02:30:00
+#SBATCH -t 00:30:00
 ##SBATCH -p batch
-#SBATCH -q batch
+#SBATCH -q debug
 #SBATCH -A chem-var
 #SBATCH -J fvaodtolatlon
 #SBATCH -D ./
@@ -14,9 +14,10 @@ set -x
 TMPDIR=`pwd`
 FREERUNEXP="FreeRun-1C192-0C192-201710"
 AERODAEXP="AeroDA-1C192-20C192-201710"
-EXPNAMES="${FREERUNEXP} ${AERODAEXP}"
+EXPNAMES="${AERODAEXP}"
+ENSMEAN="TRUE"
 SDATE=2017100600
-EDATE=2017101718
+EDATE=2017102318
 CYCINC=6
 TOPRUNDIR=${TOPRUNDIR:-"/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/"}
 OUTAODDIR=${OUTAODDIR:-"/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/LatLonGrid/FV3/AOD"}
@@ -69,6 +70,14 @@ for EXPNAME in ${EXPNAMES}; do
         TRCRS="fv_tracer  fv_tracer_aeroanl"
     fi
 
+    if [ ${EXPNAME} = ${AERODAEXP} -a ${ENSMEAN} = "TRUE" ]; then
+        ENKFOPT="enkf"
+        ENSMOPT="ensmean"
+    else
+        ENKFOPT=""
+        ENSMOPT=""
+    fi
+
     CDATE=${SDATE}
     while [ ${CDATE} -le ${EDATE} ]; do
         CYMD=${CDATE:0:8}
@@ -78,14 +87,20 @@ for EXPNAME in ${EXPNAMES}; do
         CH=${CDATE:8:2}
         CDATEPRE="${CYMD}.${CH}0000"
 
-        INDIR=${TOPRUNDIR}/${EXPNAME}/dr-data-backup/gdas.${CYMD}/${CH}/diag/FV3_AOD/
+        INDIR=${TOPRUNDIR}/${EXPNAME}/dr-data-backup/${ENKFOPT}gdas.${CYMD}/${CH}/diag/${ENSMOPT}/FV3_AOD/
 
         
         for TRCR in ${TRCRS}; do
             if [ ${TRCR} = "fv_tracer" ]; then
                 FIELD="cntlBkg"
+                if [ ${EXPNAME} = ${AERODAEXP} -a ${ENSMEAN} = "TRUE" ]; then
+                    FIELD="ensmBkg"
+		fi
             elif  [ ${TRCR} = "fv_tracer_aeroanl" ]; then
                 FIELD="cntlAnl"
+                if [ ${EXPNAME} = ${AERODAEXP} -a ${ENSMEAN} = "TRUE" ]; then
+                    FIELD="ensmAnl"
+		fi
 	    else
 		echo "Please check your tracer name, fv_tracer or fv_tracer_aeroanl and exit now"
 		exit 1

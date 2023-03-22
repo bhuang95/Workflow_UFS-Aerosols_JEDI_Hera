@@ -57,28 +57,48 @@ if [[ ${NASAMISSING} == "YES" && ${NASAMISSING} == "YES" ]]; then
     exit 0
 fi
 
-cd ${PLOTDIR}
-rm -rf *.nc
-AODFILE=aod_sigLevhPa.nc
-FREERUN_BKG_MERRA2=${DATADIR}/${FREERUNEXP}-cntlBkg_${MERRA2ANL}/${SDATE}-${EDATE}/${AODFILE}
-AERODA_BKG_MERRA2=${DATADIR}/${AERODAEXP}-cntlBkg_${MERRA2ANL}/${SDATE}-${EDATE}/${AODFILE}
-AERODA_ANL_MERRA2=${DATADIR}/${AERODAEXP}-cntlAnl_${MERRA2ANL}/${SDATE}-${EDATE}/${AODFILE}
+FIELDS="CNTL EMEAN"
 
-FREERUN_BKG_CAMSIRA=${DATADIR}/${FREERUNEXP}-cntlBkg_${CAMSIRAANL}/${SDATE}-${EDATE}/${AODFILE}
-AERODA_BKG_CAMSIRA=${DATADIR}/${AERODAEXP}-cntlBkg_${CAMSIRAANL}/${SDATE}-${EDATE}/${AODFILE}
-AERODA_ANL_CAMSIRA=${DATADIR}/${AERODAEXP}-cntlAnl_${CAMSIRAANL}/${SDATE}-${EDATE}/${AODFILE}
+for FIELD in ${FIELDS}; do
+    cd ${PLOTDIR}
+    rm -rf *.nc
+    AODFILE=aod_sigLevhPa.nc
 
-${NLN} ${FREERUN_BKG_MERRA2} ${PLOTDIR}/freebkg_m2.nc
-${NLN} ${AERODA_BKG_MERRA2} ${PLOTDIR}/aerodabkg_m2.nc
-${NLN} ${AERODA_ANL_MERRA2} ${PLOTDIR}/aerodaanl_m2.nc
+    if [ ${FIELD} = "CNTL" ]; then
+        EMEAN="False"
+	FIELDPRE='cntl'
+    elif [ ${FIELD} = "EMEAN" ]; then
+        EMEAN="True"
+	FIELDPRE='ensm'
+    else
+	echo "Please define FIELD accordingly and exit now"
+        exit 1
+    fi
+   
+    FREERUN_BKG_MERRA2=${DATADIR}/${FREERUNEXP}-cntlBkg_${MERRA2ANL}/${SDATE}-${EDATE}/${AODFILE}
+    AERODA_BKG_MERRA2=${DATADIR}/${AERODAEXP}-${FIELDPRE}Bkg_${MERRA2ANL}/${SDATE}-${EDATE}/${AODFILE}
+    AERODA_ANL_MERRA2=${DATADIR}/${AERODAEXP}-${FIELDPRE}Anl_${MERRA2ANL}/${SDATE}-${EDATE}/${AODFILE}
 
-${NLN} ${FREERUN_BKG_CAMSIRA} ${PLOTDIR}/freebkg_cams.nc
-${NLN} ${AERODA_BKG_CAMSIRA} ${PLOTDIR}/aerodabkg_cams.nc
-${NLN} ${AERODA_ANL_CAMSIRA} ${PLOTDIR}/aerodaanl_cams.nc
+    FREERUN_BKG_CAMSIRA=${DATADIR}/${FREERUNEXP}-cntlBkg_${CAMSIRAANL}/${SDATE}-${EDATE}/${AODFILE}
+    AERODA_BKG_CAMSIRA=${DATADIR}/${AERODAEXP}-${FIELDPRE}Bkg_${CAMSIRAANL}/${SDATE}-${EDATE}/${AODFILE}
+    AERODA_ANL_CAMSIRA=${DATADIR}/${AERODAEXP}-${FIELDPRE}Anl_${CAMSIRAANL}/${SDATE}-${EDATE}/${AODFILE}
 
-cp ${PYCODE} ${PLOTDIR}/plt_MERRA2_CAMSIRA_AOD550_2DMAP.py 
-python plt_MERRA2_CAMSIRA_AOD550_2DMAP.py -p ${SDATE}-${EDATE} -m ${NASAMISSING} -n ${ECMISSING} -a freebkg_m2.nc -b aerodabkg_m2.nc -c aerodaanl_m2.nc -x freebkg_cams.nc -y aerodabkg_cams.nc -z aerodaanl_cams.nc
+    ${NLN} ${FREERUN_BKG_MERRA2} ${PLOTDIR}/freebkg_m2.nc
+    ${NLN} ${AERODA_BKG_MERRA2} ${PLOTDIR}/aerodabkg_m2.nc
+    ${NLN} ${AERODA_ANL_MERRA2} ${PLOTDIR}/aerodaanl_m2.nc
 
-ERR=$?
+    ${NLN} ${FREERUN_BKG_CAMSIRA} ${PLOTDIR}/freebkg_cams.nc
+    ${NLN} ${AERODA_BKG_CAMSIRA} ${PLOTDIR}/aerodabkg_cams.nc
+    ${NLN} ${AERODA_ANL_CAMSIRA} ${PLOTDIR}/aerodaanl_cams.nc
 
+    cp ${PYCODE} ${PLOTDIR}/plt_MERRA2_CAMSIRA_AOD550_2DMAP.py 
+    python plt_MERRA2_CAMSIRA_AOD550_2DMAP.py -e ${EMEAN} -p ${SDATE}-${EDATE} -m ${NASAMISSING} -n ${ECMISSING} -a freebkg_m2.nc -b aerodabkg_m2.nc -c aerodaanl_m2.nc -x freebkg_cams.nc -y aerodabkg_cams.nc -z aerodaanl_cams.nc
+
+    ERR=$?
+
+    if [ ${ERR} -ne 0 ]; then
+       echo "Python plot failed and exit"
+       exit ${ERR}
+    fi
+done
 exit ${ERR}

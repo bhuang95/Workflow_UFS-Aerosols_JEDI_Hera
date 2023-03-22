@@ -2,8 +2,8 @@
 
 #SBATCH --output=./metplus.out
 #SBATCH --job-name=met_series_anl-NRT-NODA-cntlBckg.aod-NASAana.AODANA
-#SBATCH --qos=debug
-#SBATCH --time=00:29:00
+#SBATCH --qos=batch
+#SBATCH --time=02:29:00
 #SBATCH --nodes=1 --ntasks-per-node=1 --cpus-per-task=1
 #SBATCH --account=chem-var
 
@@ -60,8 +60,8 @@ OBSTYPES=${OBSTYPES:-"${MERRA2ANL} ${CAMSIRAANL}"}
 
 WRKD=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/MISC/UFS-Aerosols/TestScripts/FV3AOD/METPlusRun
 
-SDATE=${SDATE:-"2017100600"}
-EDATE=${EDATE:-"2017100718"}
+SDATE=${SDATE:-"2017101000"}
+EDATE=${EDATE:-"2017102318"}
 
 machine=${machine:-"Hera"}
 BASE=${BASE:-"/home/Bo.Huang/JEDI-2020/miscScripts-home/METPlus/METplus-AerosoDiag/METplus_pkg/"}
@@ -86,7 +86,7 @@ PLEV="100 250 400 500 600 700 850 925 1000"
 
 for EXPRUN in ${EXPRUNS}; do
     if [ ${EXPRUN} = ${AERODAEXP} ]; then
-        FIELDS="cntlBkg cntlAnl"
+        FIELDS="cntlBkg cntlAnl ensmBkg ensmAnl"
     elif [ ${EXPRUN} = ${FREERUNEXP} ]; then
         FIELDS="cntlBkg"
     else

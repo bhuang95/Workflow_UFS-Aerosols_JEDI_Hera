@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH -t 02:30:00
+#SBATCH -t 00:30:00
 ##SBATCH -p hera
-#SBATCH -q batch
+#SBATCH -q debug
 #SBATCH -A chem-var
 #SBATCH -J fgat
 #SBATCH -D ./
@@ -12,8 +12,9 @@
 TMPDIR="/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/MISC/UFS-Aerosols/TestScripts/FV3AOD/"
 FREERUNEXP="FreeRun-1C192-0C192-201710"
 AERODAEXP="AeroDA-1C192-20C192-201710"
-EXPNAMES="${FREERUNEXP} ${AERODAEXP}"
-SDATE=2017101806
+EXPNAMES="${AERODAEXP}"
+ENSMEAN="TRUE"
+SDATE=2017102100
 EDATE=2017102318
 CYCINC=6
 TOPRUNDIR=${TOPRUNDIR:-"/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/"}
@@ -64,6 +65,13 @@ for EXPNAME in ${EXPNAMES}; do
         TRCRS="fv_tracer  fv_tracer_aeroanl"
     fi
 
+    if [ ${EXPNAME} = ${AERODAEXP} -a ${ENSMEAN} = "TRUE" ]; then
+        ENKFOPT="enkf"
+        ENSMOPT="ensmean"
+    else
+        ENKFOPT=""
+        ENSMOPT=""
+    fi
     CDATE=${SDATE}
     while [ ${CDATE} -le ${EDATE} ]; do
         CYMD=${CDATE:0:8}
@@ -74,8 +82,8 @@ for EXPNAME in ${EXPNAMES}; do
         GYMD=${GDATE:0:8}
         GH=${GDATE:8:2}
         
-        INDATADIR=${TOPRUNDIR}/${EXPNAME}/dr-data-backup/gdas.${GYMD}/${GH}/atmos/RESTART/
-        OUTDATADIR=${TOPRUNDIR}/${EXPNAME}/dr-data-backup/gdas.${CYMD}/${CH}/diag/FV3_AOD/
+        INDATADIR=${TOPRUNDIR}/${EXPNAME}/dr-data-backup/${ENKFOPT}gdas.${GYMD}/${GH}/atmos/${ENSMOPT}/RESTART/
+        OUTDATADIR=${TOPRUNDIR}/${EXPNAME}/dr-data-backup/${ENKFOPT}gdas.${CYMD}/${CH}/diag/${ENSMOPT}/FV3_AOD/
 
         [[ ! -d ${OUTDATADIR} ]] && mkdir -p ${OUTDATADIR}
         

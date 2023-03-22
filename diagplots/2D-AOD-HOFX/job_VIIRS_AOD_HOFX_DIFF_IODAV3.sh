@@ -16,42 +16,50 @@ module use -a /contrib/anaconda/modulefiles
 module load anaconda/latest
 
 codedir=$(pwd)
+topexpdir=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/
 topplotdir=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/AeroDA-1C192-20C192-201710/diagplots/VIIRS_AOD_HOFX_DIFF_IODAV3
-
-[[ ! -d ${plotdir} ]]; mkdir -p ${plotdir}
-
+ndate=/scratch2/NCEPDEV/nwprod/NCEPLIBS/utils/prod_util.v1.1.0/exec/ndate
 
 cycst=2017101100
-cyced=2017102100
+cyced=2017102300
 # (if cycinc=24, set cycst and cyced as YYYYMMDD00)
 cycinc=24 
 # (6 or 24 hours)
-aeroda=True
-# (True for DA or False for freerun)
-emean=True
-# (True for ensmean plot or False for cntl plot)
-prefix=AeroDA
-# (AeroDA or FreeRun)
-datadir=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/AeroDA-1C192-20C192-201710/dr-data-backup
-#datadir=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/FreeRun-1C192-0C192-201710/dr-data-backup
-# (Data directory)
 
-ndate=/scratch2/NCEPDEV/nwprod/NCEPLIBS/utils/prod_util.v1.1.0/exec/ndate
+freerunexp="FreeRun-1C192-0C192-201710"
+aerodaexp="AeroDA-1C192-20C192-201710"
 
-plotdir=${topplotdir}/${prefix}
-[[ ! -d ${plotdir} ]] && mkdir -p ${plotdir}
+exps="${aerodaexp}"
 
-cp plt_VIIRS_AOD_HOFX_DIFF_IODAV3.py ${plotdir}/plt_VIIRS_AOD_HOFX_DIFF_IODAV3.py
+for exp in ${exps}; do
+    if [ ${exp} = ${aerodaexp} ]; then
+        aeroda=True
+        emean=False
+        prefix=AeroDA
+    elif [ ${exp} = ${freerunexp} ]; then
+        aeroda=False
+        emean=False
+        prefix=FreeRun
+    else
+	echo "Please deefine aeroda, emean, prefix accordingly for your exps"
+    fi
 
-cd ${plotdir}/
+    datadir=${topexpdir}/${exp}/dr-data-backup
 
-cyc=${cycst}
-while [ ${cyc} -le ${cyced} ]; do
-    echo ${cyc}
-    python plt_VIIRS_AOD_HOFX_DIFF_IODAV3.py -c ${cyc} -i ${cycinc} -a ${aeroda} -m ${emean} -p ${prefix} -t ${datadir}
-    ERR=$?
-    [[ ${ERR} -ne 0 ]] && exit 100
-    cyc=$(${ndate} ${cycinc} ${cyc})
+    plotdir=${topplotdir}/${prefix}
+    [[ ! -d ${plotdir} ]] && mkdir -p ${plotdir}
+
+    cp plt_VIIRS_AOD_HOFX_DIFF_IODAV3.py ${plotdir}/plt_VIIRS_AOD_HOFX_DIFF_IODAV3.py
+
+    cd ${plotdir}/
+
+    cyc=${cycst}
+    while [ ${cyc} -le ${cyced} ]; do
+        echo ${cyc}
+        python plt_VIIRS_AOD_HOFX_DIFF_IODAV3.py -c ${cyc} -i ${cycinc} -a ${aeroda} -m ${emean} -p ${prefix} -t ${datadir}
+        ERR=$?
+        [[ ${ERR} -ne 0 ]] && exit 100
+        cyc=$(${ndate} ${cycinc} ${cyc})
+    done
 done
-
 exit 0

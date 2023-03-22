@@ -8,8 +8,8 @@
 #SBATCH -o /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/calc_aeronet_hfx.log
 #SBATCH -e /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/calc_aeronet_hfx.log
 
-SDATE=2017101200
-EDATE=2017101818
+SDATE=2017101900
+EDATE=2017102318
 CYCINC=6
 TOPEXPDIR='/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/'
 EXPNAMES='FreeRun-1C192-0C192-201710 AeroDA-1C192-20C192-201710'

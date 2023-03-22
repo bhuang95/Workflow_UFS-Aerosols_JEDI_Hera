@@ -492,7 +492,7 @@ def plot_map_contourf_aod(lon, lat, mnasa, mec, nasa, ec, nodabckg, dabckg, daan
 
     fig.suptitle(ptitle, fontsize=18, fontweight="bold")
     fig.tight_layout(rect=[0.0, 0.0, 0.90, 0.90])
-    pname=f'{nasamod}-{ecmod}-AOD_{cyc}.png'
+    pname=f'{damod}-{nasamod}-{ecmod}-AOD_{cyc}.png'
     plt.savefig(pname)
     plt.close(fig)
     return
@@ -582,7 +582,7 @@ def plot_map_contourf_bias(lon, lat, mnasa, mec, \
     fig.suptitle(ptitle, fontsize=14, fontweight="bold")
     fig.tight_layout(rect=[0.0, 0.0, 0.90, 0.90])
     #pname='NASA-ECMWF-AOD-BIAS_full_0m_f000.png'
-    pname=f'{nasamod}-{ecmod}-AOD-BIAS_{cyc}.png'
+    pname=f'{damod}-{nasamod}-{ecmod}-AOD-BIAS_{cyc}.png'
     plt.savefig(pname)
     plt.close(fig)
     return
@@ -662,7 +662,7 @@ def plot_map_contourf_rmse(lon, lat, mnasa, mec, \
     fig.suptitle(ptitle, fontsize=14, fontweight="bold")
     fig.tight_layout(rect=[0.0, 0.0, 0.90, 0.90])
     #pname='NASA-ECMWF-AOD-RMSE_full_0m_f000.png'
-    pname=f'{nasamod}-{ecmod}-AOD-RMSE_{cyc}.png'
+    pname=f'{damod}-{nasamod}-{ecmod}-AOD-RMSE_{cyc}.png'
     plt.savefig(pname)
     plt.close(fig)
     return
@@ -675,6 +675,11 @@ if __name__ == '__main__':
     )
 
     required = parser.add_argument_group(title='required arguments')
+    required.add_argument(
+        '-e', '--emean',
+        help="Use DA ensmeble mean or not",
+        type=str, required=True)
+
     required.add_argument(
         '-p', '--cycles',
         help="String of SDATE-EDATE",
@@ -722,6 +727,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     cyc = args.cycles
+
+    emean =  ((args.cycles == "true") or (args.cycles == "True") or (args.cycles == "TRUE"))
 
     miss_nasa = args.missmerra2
     miss_ec = args.misscams
@@ -833,7 +840,11 @@ cmapmae=cmapaod
 nasamod='MERRA2'
 ecmod='CAMSiRA'
 freerunmod='FreeRun'
-aerodamod='AeroDA'
+if emean:
+    aerodamod='AeroDAEmean'
+else:
+    aerodamod='AeroDACntl'
+
 #plot_map_contourf_10(lon, lat, nasa_aod, ec_aod, nodabckg_aod, dabckg_aod, daanal_aod, \
 #                     nodabckg_nasa_bias, dabckg_nasa_bias, daanal_nasa_bias, \
 #                     nodabckg_nasa_rmse, dabckg_nasa_rmse, daanal_nasa_rmse, \
