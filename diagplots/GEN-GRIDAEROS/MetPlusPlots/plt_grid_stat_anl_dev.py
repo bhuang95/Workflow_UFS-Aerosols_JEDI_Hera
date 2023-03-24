@@ -1,4 +1,4 @@
-import sys,os
+import sys,os,argparse
 sys.path.append('/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/METplus-diag/METplus_pkg//pyscripts/lib')
 #from subprocess import check_output as chkop
 import subprocess as sbps
@@ -86,18 +86,18 @@ if __name__ == '__main__':
 
     inc_h=6
 
-    pregrps = [ freerunpre, dacntlpre, freerunpre ]
+    pregrps = [ freerunpre, dacntlpre, daensmpre ]
 
-    ngrps=len(pregrp)
+    ngrps=len(pregrps)
     leglist=["FreeRun 6h fcst", "AeroDACntl 6h fcst", "AeroDAEnsm 6h fcst", "AeroDACntl analysis", "AeroDAEnsm analysis"]
-    pltcolor=['blck', 'blue', 'green', 'red', 'orange']
+    pltcolor=['black', 'blue', 'green', 'red', 'orange']
     pltstyle=['-', '-','-','-','-']
     pltmarker=['o' ,'o', 'o','o','o']
 
     plev=(100, 250, 400, 500, 600, 700, 850, 925, 1000)
     #plev=(100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 850, 900, 925, 950, 1000)
 
-    tmpfile=f'{freerunpre}_{sdate}.stat'
+    tmpfile=f'{freerunpre}_{mask}_{sdate}.stat'
     f=open(tmpfile,'r')
     nlev=-1
     for line in f.readlines():
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     ntime=0
     cdate=sdate
     while (cdate<=edate):
-        filename=f'{freerunpre}_{cdate}.stat'
+        filename=f'{freerunpre}_{mask}_{cdate}.stat'
         ntime=ntime+1
         dlist.append(str(cdate))
         cdate=ndate(cdate,inc_h)
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     while (cdate<=edate):
         for igrp in range(ngrps):
             filepre=pregrps[igrp]
-            filename=f'{filepre}_{cdate}.stat'
+            filename=f'{filepre}_{mask}_{cdate}.stat'
             fbar[ntime,:,igrp], obar[ntime,:,igrp]=readFcstObsStats(filename,nlev)
 
         cdate=ndate(cdate,inc_h)
@@ -161,6 +161,7 @@ if __name__ == '__main__':
     pltdata[:,0:ngrps]=fbar.mean(axis=0)
     pltdata[:,ngrps:]=obar[:,:,1:].mean(axis=0)
 
+    print(pltdata)
     fig=plt.figure(figsize=(9,10))
     ax=plt.subplot()
     ax.invert_yaxis()

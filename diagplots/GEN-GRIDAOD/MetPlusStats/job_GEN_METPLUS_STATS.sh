@@ -1,9 +1,9 @@
 #!/bin/bash --login
 
-#SBATCH --output=./metplus.out
+#SBATCH --output=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/metplus.out
 #SBATCH --job-name=met_series_anl-NRT-NODA-cntlBckg.aod-NASAana.AODANA
-#SBATCH --qos=batch
-#SBATCH --time=02:29:00
+#SBATCH --qos=debug
+#SBATCH --time=00:29:00
 #SBATCH --nodes=1 --ntasks-per-node=1 --cpus-per-task=1
 #SBATCH --account=chem-var
 
@@ -99,8 +99,8 @@ for FIELD in ${FIELDS}; do
 
     FCST_NAME="${EXPRUN}-${FIELD}"
 
-    FCST_HEAD="fv3_aods_${SENSOR}_"
-    FCST_SUFF="_pll.nc"
+    FCST_HEAD="fv3_aod_${SENSOR}_"
+    FCST_SUFF="_ll.nc"
     FCST_VAR="aod"
     FCST_VARDIM="4"
     SIGLEV="TRUE"
@@ -109,14 +109,14 @@ for OBSTYPE in ${OBSTYPES}; do
     OBSPATH=$OBSBASE/${OBSTYPE}/AOD/
     if [ ${OBSTYPE} = ${CAMSIRAANL} ]; then
         OBS_NAME=${CAMSIRAANL}
-        OBS_HEAD="camsira_aods_"
-        OBS_SUFF="_pll.nc"
+        OBS_HEAD="camsira_aod_"
+        OBS_SUFF="_ll.nc"
         OBS_VAR="aod550"
         OBS_VARDIM="3"
     elif [ ${OBSTYPE} = ${MERRA2ANL} ]; then
         OBS_NAME=${MERRA2ANL}
-        OBS_HEAD="merra2_aods_"
-        OBS_SUFF="_pll.nc"
+        OBS_HEAD="merra2_aod_"
+        OBS_SUFF="_ll.nc"
         OBS_VAR="AODANA"
         OBS_VARDIM="3"
     else

@@ -58,7 +58,7 @@ for ANL in ${ANLS}; do
 
         TIMEIND=0
         for HOUR in ${HOURS}; do
-            OUTFILE=${OUTDIR}/${OUTANLPRE}_aods_${CYMD}${HOUR}_pll.nc
+            OUTFILE=${OUTDIR}/${OUTANLPRE}_aod_${CYMD}${HOUR}_ll.nc
             [[ -f ${OUTFILE} ]] && rm -rf ${OUTFILE} 
 
             ncks -d time,${TIMEIND},${TIMEIND} ${INFILE} ${OUTFILE}

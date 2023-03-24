@@ -52,12 +52,12 @@ OBS_AEROS_SUF=_pll.nc
 
 FCST_AOD_SRC=${INPUTBASE_AOD}/${FCSTRUNNAME}/${FCSTFIELD}/
 FCST_AOD_TMP=${WRKDTOP}/FCST_AOD_DATA
-FCST_AOD_PRE=fv3_aods_v.viirs-m_npp_
-FCST_AOD_SUF=_pll.nc
+FCST_AOD_PRE=fv3_aod_v.viirs-m_npp_
+FCST_AOD_SUF=_ll.nc
 OBS_AOD_SRC=${INPUTBASE_AOD}/${OBSRUNNAME}/${OBSFIELD}/
 OBS_AOD_TMP=${WRKDTOP}/OBS_AOD_DATA
-OBS_AOD_PRE=fv3_aods_v.viirs-m_npp_
-OBS_AOD_SUF=_pll.nc
+OBS_AOD_PRE=fv3_aod_v.viirs-m_npp_
+OBS_AOD_SUF=_ll.nc
 
 VARIABLES="AEROS AOD"
 
@@ -195,7 +195,7 @@ elif [ -d /scratch1/NCEPDEV/da ]; then
 fi
 
 #Process aerosol species
-#nvars=1
+nvars=-1
 for ((ivar=0;ivar<${nvars};ivar++))
 do
     export FCSTVAR=${FCSTVARS[ivar]}
@@ -254,5 +254,5 @@ export OUTPUTBASE=${WRKD}
 
 cd $WRKD
 ##rm -rf $WRKD/*
-/bin/sh $subcmd -a $PROJ_ACCOUNT -p $POPOTS -j $METRUN-${FCSTVAR}-${OBSVAR} -o ${WRKD}/$METRUN-${FCSTVAR}-${OBSVAR}.out -q batch -t 03:29:00 -r /1 ${RUNSCRIPT}
+/bin/sh $subcmd -a $PROJ_ACCOUNT -p $POPOTS -j $METRUN-${FCSTVAR}-${OBSVAR} -o ${WRKD}/$METRUN-${FCSTVAR}-${OBSVAR}.out -q debug -t 00:29:00 -r /1 ${RUNSCRIPT}
 exit 0

@@ -728,7 +728,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     cyc = args.cycles
 
-    emean =  ((args.cycles == "true") or (args.cycles == "True") or (args.cycles == "TRUE"))
+    emean =  ((args.emean == "true") or (args.emean == "True") or (args.emean == "TRUE"))
 
     miss_nasa = args.missmerra2
     miss_ec = args.misscams
