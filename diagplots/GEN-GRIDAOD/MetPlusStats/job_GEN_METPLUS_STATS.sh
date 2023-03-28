@@ -52,16 +52,18 @@ set -x
 FREERUNEXP="FreeRun-1C192-0C192-201710"
 AERODAEXP="AeroDA-1C192-20C192-201710"
 EXPRUNS=${EXPRUNS:-"${FREERUNEXP} ${AERODAEXP}"}
+#EXPRUNS=${EXPRUNS:-"${AERODAEXP}"}
 
 MERRA2ANL="MERRA2"
 CAMSIRAANL="CAMSIRA"
 OBSTYPES=${OBSTYPES:-"${MERRA2ANL} ${CAMSIRAANL}"}
+#OBSTYPES=${OBSTYPES:-"${CAMSIRAANL}"}
 
 
 WRKD=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/MISC/UFS-Aerosols/TestScripts/FV3AOD/METPlusRun
 
 SDATE=${SDATE:-"2017101000"}
-EDATE=${EDATE:-"2017102318"}
+EDATE=${EDATE:-"2017102718"}
 
 machine=${machine:-"Hera"}
 BASE=${BASE:-"/home/Bo.Huang/JEDI-2020/miscScripts-home/METPlus/METplus-AerosoDiag/METplus_pkg/"}
@@ -87,6 +89,7 @@ PLEV="100 250 400 500 600 700 850 925 1000"
 for EXPRUN in ${EXPRUNS}; do
     if [ ${EXPRUN} = ${AERODAEXP} ]; then
         FIELDS="cntlBkg cntlAnl ensmBkg ensmAnl"
+        #FIELDS="ensmAnl"
     elif [ ${EXPRUN} = ${FREERUNEXP} ]; then
         FIELDS="cntlBkg"
     else

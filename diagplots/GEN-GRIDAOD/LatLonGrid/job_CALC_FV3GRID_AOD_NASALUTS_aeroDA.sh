@@ -6,21 +6,21 @@
 #SBATCH -A chem-var
 #SBATCH -J fgat
 #SBATCH -D ./
-#SBATCH -o /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/calc_fv3grid_aod_ensm.out
-#SBATCH -e /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/calc_fv3grid_aod_ensm.out
+#SBATCH -o /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/calc_fv3grid_aod_aeroda.out
+#SBATCH -e /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/calc_fv3grid_aod_aeroda.out
 
 TMPDIR="/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/MISC/UFS-Aerosols/TestScripts/FV3AOD/"
 FREERUNEXP="FreeRun-1C192-0C192-201710"
 AERODAEXP="AeroDA-1C192-20C192-201710"
 EXPNAMES="${AERODAEXP}"
-ENSMEAN="TRUE"
+#EXPNAMES="${AERODAEXP}"
 SDATE=2017102600
 EDATE=2017102718
 CYCINC=6
 TOPRUNDIR=${TOPRUNDIR:-"/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/"}
 HOMEgfs=${HOMEgfs:-"/home/Bo.Huang/JEDI-2020/expRuns/exp_UFS-Aerosols/cycExp_ATMA_warm/"}
 HOMEjedi=${HOMEjedi:-"/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/fv3-bundle/V20230312/build"}
-DATA=${DATA:-${TMPDIR}/gocart_aod_fv3_mpi_ensmean}
+DATA=${DATA:-${TMPDIR}/gocart_aod_fv3_mpi_aeroda}
 AODTYPE=${AODTYPE:-"NOAA_VIIRS"}
 COMPONENT=${COMPONENT:-"atmos"}
 NDATE=${NDATE:-"/scratch2/NCEPDEV/nwprod/NCEPLIBS/utils/prod_util.v1.1.0/exec/ndate"}
@@ -65,13 +65,6 @@ for EXPNAME in ${EXPNAMES}; do
         TRCRS="fv_tracer  fv_tracer_aeroanl"
     fi
 
-    if [ ${EXPNAME} = ${AERODAEXP} -a ${ENSMEAN} = "TRUE" ]; then
-        ENKFOPT="enkf"
-        ENSMOPT="ensmean"
-    else
-        ENKFOPT=""
-        ENSMOPT=""
-    fi
     CDATE=${SDATE}
     while [ ${CDATE} -le ${EDATE} ]; do
         CYMD=${CDATE:0:8}
@@ -82,8 +75,8 @@ for EXPNAME in ${EXPNAMES}; do
         GYMD=${GDATE:0:8}
         GH=${GDATE:8:2}
         
-        INDATADIR=${TOPRUNDIR}/${EXPNAME}/dr-data-backup/${ENKFOPT}gdas.${GYMD}/${GH}/atmos/${ENSMOPT}/RESTART/
-        OUTDATADIR=${TOPRUNDIR}/${EXPNAME}/dr-data-backup/${ENKFOPT}gdas.${CYMD}/${CH}/diag/${ENSMOPT}/FV3_AOD/
+        INDATADIR=${TOPRUNDIR}/${EXPNAME}/dr-data-backup/gdas.${GYMD}/${GH}/atmos/RESTART/
+        OUTDATADIR=${TOPRUNDIR}/${EXPNAME}/dr-data-backup/gdas.${CYMD}/${CH}/diag/FV3_AOD/
 
         [[ ! -d ${OUTDATADIR} ]] && mkdir -p ${OUTDATADIR}
         

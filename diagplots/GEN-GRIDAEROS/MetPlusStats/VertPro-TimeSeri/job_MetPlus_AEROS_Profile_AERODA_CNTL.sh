@@ -28,8 +28,8 @@ export INPUTBASE_AEROS=/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI
 export INPUTBASE_AOD=/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/UfsData/LatLonGrid/FV3/AOD/
 export RUNSCRIPT=/home/Bo.Huang/JEDI-2020/miscScripts-home/METPlus/runScripts/${METRUN}.sh
 
-export SDATE=2017100600
-export EDATE=2017102318
+export SDATE=2017102400
+export EDATE=2017102718
 export INC_H=6
 NDATE=/scratch2/NCEPDEV/nwprod/NCEPLIBS/utils/prod_util.v1.1.0/exec/ndate
 

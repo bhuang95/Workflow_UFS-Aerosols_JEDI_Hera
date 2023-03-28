@@ -18,7 +18,7 @@ module load anaconda/latest
 CURDIR=$(pwd)
 
 SDATE=2017101000
-EDATE=2017102318
+EDATE=2017102718
 MISS_AERONET=${CURDIR}/Record_AeronetHfxMissing.info
 CINC=6
 AODTYPE='AERONET_AOD15'

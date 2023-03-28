@@ -1,25 +1,26 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH -t 02:30:00
+#SBATCH -t 00:30:00
 ##SBATCH -p hera
-#SBATCH -q batch
+#SBATCH -q debug
 #SBATCH -A chem-var
 #SBATCH -J fgat
 #SBATCH -D ./
-#SBATCH -o /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/calc_fv3grid_aod.out
-#SBATCH -e /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/calc_fv3grid_aod.out
+#SBATCH -o /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/calc_fv3grid_aod_cntl.out
+#SBATCH -e /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/calc_fv3grid_aod_cntl.out
 
 TMPDIR="/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/MISC/UFS-Aerosols/TestScripts/FV3AOD/"
 FREERUNEXP="FreeRun-1C192-0C192-201710"
 AERODAEXP="AeroDA-1C192-20C192-201710"
-EXPNAMES="${FREERUNEXP} ${AERODAEXP}"
-SDATE=2017101806
-EDATE=2017102318
+EXPNAMES="${FREERUNEXP}"
+#EXPNAMES="${AERODAEXP}"
+SDATE=2017102500
+EDATE=2017102718
 CYCINC=6
 TOPRUNDIR=${TOPRUNDIR:-"/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/"}
 HOMEgfs=${HOMEgfs:-"/home/Bo.Huang/JEDI-2020/expRuns/exp_UFS-Aerosols/cycExp_ATMA_warm/"}
 HOMEjedi=${HOMEjedi:-"/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/fv3-bundle/V20230312/build"}
-DATA=${DATA:-${TMPDIR}/gocart_aod_fv3_mpi}
+DATA=${DATA:-${TMPDIR}/gocart_aod_fv3_mpi_cntl}
 AODTYPE=${AODTYPE:-"NOAA_VIIRS"}
 COMPONENT=${COMPONENT:-"atmos"}
 NDATE=${NDATE:-"/scratch2/NCEPDEV/nwprod/NCEPLIBS/utils/prod_util.v1.1.0/exec/ndate"}

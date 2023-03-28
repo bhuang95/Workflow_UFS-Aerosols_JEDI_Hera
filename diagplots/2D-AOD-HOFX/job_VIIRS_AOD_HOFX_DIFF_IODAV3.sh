@@ -20,8 +20,8 @@ topexpdir=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/
 topplotdir=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/AeroDA-1C192-20C192-201710/diagplots/VIIRS_AOD_HOFX_DIFF_IODAV3
 ndate=/scratch2/NCEPDEV/nwprod/NCEPLIBS/utils/prod_util.v1.1.0/exec/ndate
 
-cycst=2017101100
-cyced=2017102300
+cycst=2017102400
+cyced=2017102700
 # (if cycinc=24, set cycst and cyced as YYYYMMDD00)
 cycinc=24 
 # (6 or 24 hours)
@@ -34,7 +34,7 @@ exps="${aerodaexp}"
 for exp in ${exps}; do
     if [ ${exp} = ${aerodaexp} ]; then
         aeroda=True
-        emean=False
+        emean=True
         prefix=AeroDA
     elif [ ${exp} = ${freerunexp} ]; then
         aeroda=False

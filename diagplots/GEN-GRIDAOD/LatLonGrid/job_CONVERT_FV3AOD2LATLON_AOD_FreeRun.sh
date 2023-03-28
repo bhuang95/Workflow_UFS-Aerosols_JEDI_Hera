@@ -1,21 +1,20 @@
 #!/bin/bash
 #SBATCH -n 1
-#SBATCH -t 00:30:00
+#SBATCH -t 01:30:00
 ##SBATCH -p batch
-#SBATCH -q debug
+#SBATCH -q batch
 #SBATCH -A chem-var
 #SBATCH -J fvaodtolatlon
 #SBATCH -D ./
-#SBATCH -o /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/fvaod2latlon.out
-#SBATCH -e /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/fvaod2latlon.out
+#SBATCH -o /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/fvaod2latlon_freerun.out
+#SBATCH -e /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/fvaod2latlon_freerun.out
 
 set -x
 
 TMPDIR=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/MISC/UFS-Aerosols/TestScripts/
 FREERUNEXP="FreeRun-1C192-0C192-201710"
 AERODAEXP="AeroDA-1C192-20C192-201710"
-EXPNAMES="${AERODAEXP}"
-ENSMEAN="TRUE"
+EXPNAMES="${FREERUNEXP}"
 SDATE=2017100600
 EDATE=2017102718
 CYCINC=6
@@ -25,7 +24,7 @@ HOMEgfs=${HOMEgfs:-"/home/Bo.Huang/JEDI-2020/expRuns/exp_UFS-Aerosols/cycExp_ATM
 HOMEjedi=${HOMEjedi:-"/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expCodes/fv3-bundle/V20230312/build"}
 FIXDIR_SELF=${FIXDIR_SELF:-"${HOMEgfs}/fix_self"}
 CASE=${CASE:-"C192"}
-DATA=${DATA:-${TMPDIR}/fv2latloni-ensm}
+DATA=${DATA:-${TMPDIR}/fv2latlon_freerun}
 AODTYPE=${AODTYPE:-"NOAA_VIIRS"}
 COMPONENT=${COMPONENT:-"atmos"}
 NDATE=${NDATE:-"/scratch2/NCEPDEV/nwprod/NCEPLIBS/utils/prod_util.v1.1.0/exec/ndate"}
@@ -70,14 +69,6 @@ for EXPNAME in ${EXPNAMES}; do
         TRCRS="fv_tracer  fv_tracer_aeroanl"
     fi
 
-    if [ ${EXPNAME} = ${AERODAEXP} -a ${ENSMEAN} = "TRUE" ]; then
-        ENKFOPT="enkf"
-        ENSMOPT="ensmean"
-    else
-        ENKFOPT=""
-        ENSMOPT=""
-    fi
-
     CDATE=${SDATE}
     while [ ${CDATE} -le ${EDATE} ]; do
         CYMD=${CDATE:0:8}
@@ -87,20 +78,14 @@ for EXPNAME in ${EXPNAMES}; do
         CH=${CDATE:8:2}
         CDATEPRE="${CYMD}.${CH}0000"
 
-        INDIR=${TOPRUNDIR}/${EXPNAME}/dr-data-backup/${ENKFOPT}gdas.${CYMD}/${CH}/diag/${ENSMOPT}/FV3_AOD/
+        INDIR=${TOPRUNDIR}/${EXPNAME}/dr-data-backup/gdas.${CYMD}/${CH}/diag/FV3_AOD/
 
         
         for TRCR in ${TRCRS}; do
             if [ ${TRCR} = "fv_tracer" ]; then
                 FIELD="cntlBkg"
-                if [ ${EXPNAME} = ${AERODAEXP} -a ${ENSMEAN} = "TRUE" ]; then
-                    FIELD="ensmBkg"
-		fi
             elif  [ ${TRCR} = "fv_tracer_aeroanl" ]; then
                 FIELD="cntlAnl"
-                if [ ${EXPNAME} = ${AERODAEXP} -a ${ENSMEAN} = "TRUE" ]; then
-                    FIELD="ensmAnl"
-		fi
 	    else
 		echo "Please check your tracer name, fv_tracer or fv_tracer_aeroanl and exit now"
 		exit 1

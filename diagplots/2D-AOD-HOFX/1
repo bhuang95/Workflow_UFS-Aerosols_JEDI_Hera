@@ -3,10 +3,10 @@
 #SBATCH -t 02:20:00
 #SBATCH -p service
 #SBATCH -A chem-var
-#SBATCH -J VIIRS_AOD_INCREMENT_IODAV3
+#SBATCH -J VIIRS_AOD_HOFX_DIFF_IODAV3
 #SBATCH -D ./
-#SBATCH -o /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/VIIRS_AOD_INCREMENT_IODAV3.out
-#SBATCH -e /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/VIIRS_AOD_INCREMENT_IODAV3.out
+#SBATCH -o /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/VIIRS_AOD_HOFX_DIFF_IODAV3.out
+#SBATCH -e /scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/miscLog/VIIRS_AOD_HOFX_DIFF_IODAV3.out
 
 
 # This jobs plots the AOD, HOFX and their difference in a 3X1 figure.
@@ -17,8 +17,7 @@ module load anaconda/latest
 
 codedir=$(pwd)
 topexpdir=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/
-topplotdir=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/AeroDA-1C192-20C192-201710/diagplots/VIIRS_AOD_INCREMENT_IODAV3
-
+topplotdir=/scratch2/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/expRuns/exp_UFS-Aerosols/AeroDA-1C192-20C192-201710/diagplots/VIIRS_AOD_HOFX_DIFF_IODAV3
 ndate=/scratch2/NCEPDEV/nwprod/NCEPLIBS/utils/prod_util.v1.1.0/exec/ndate
 
 cycst=2017102400
@@ -27,21 +26,20 @@ cyced=2017102700
 cycinc=24 
 # (6 or 24 hours)
 
-
 freerunexp="FreeRun-1C192-0C192-201710"
 aerodaexp="AeroDA-1C192-20C192-201710"
 
-exps="${aerodaexp}"
+exps="${freerunexp} ${aerodaexp}"
 
 for exp in ${exps}; do
     if [ ${exp} = ${aerodaexp} ]; then
         aeroda=True
-        emean=True
+        emean=False
         prefix=AeroDA
-    #elif [ ${exp} = ${freerunexp} ]; then
-    #    aeroda=False
-    #    emean=False
-    #    prefix=FreeRun
+    elif [ ${exp} = ${freerunexp} ]; then
+        aeroda=False
+        emean=False
+        prefix=FreeRun
     else
 	echo "Please deefine aeroda, emean, prefix accordingly for your exps"
     fi
@@ -51,17 +49,17 @@ for exp in ${exps}; do
     plotdir=${topplotdir}/${prefix}
     [[ ! -d ${plotdir} ]] && mkdir -p ${plotdir}
 
-    cp plt_VIIRS_AOD_INCREMENT_IODAV3.py ${plotdir}/plt_VIIRS_AOD_INCREMENT_IODAV3.py
+    cp plt_VIIRS_AOD_HOFX_DIFF_IODAV3.py ${plotdir}/plt_VIIRS_AOD_HOFX_DIFF_IODAV3.py
 
-    cd ${plotdir}
+    cd ${plotdir}/
 
     cyc=${cycst}
     while [ ${cyc} -le ${cyced} ]; do
         echo ${cyc}
-        python plt_VIIRS_AOD_INCREMENT_IODAV3.py -c ${cyc} -i ${cycinc} -a ${aeroda} -m ${emean} -p ${prefix} -t ${datadir}
+        python plt_VIIRS_AOD_HOFX_DIFF_IODAV3.py -c ${cyc} -i ${cycinc} -a ${aeroda} -m ${emean} -p ${prefix} -t ${datadir}
         ERR=$?
         [[ ${ERR} -ne 0 ]] && exit 100
         cyc=$(${ndate} ${cycinc} ${cyc})
     done
 done
-exit
+exit 0
