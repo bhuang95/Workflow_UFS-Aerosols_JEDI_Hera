@@ -55,15 +55,12 @@
 
 	<!-- Run Envrionment -->
 	<!ENTITY RUN_ENVIR "emc">
-	<!ENTITY AERODA "TRUE">
-	<!ENTITY ENSRUN "TRUE">
-	<!ENTITY GFSVERSION "V14"> 
 
 
 	<!-- Machine related entities -->
 	<!ENTITY PARTITION    "hera">
 	<!ENTITY ACCOUNT    "wrf-chem">
-	<!ENTITY QUEUE      "debug">
+	<!ENTITY QUEUE      "batch">
 	<!ENTITY SCHEDULER  "slurm">
 
 	<!-- ROCOTO parameters that control workflow -->
@@ -188,6 +185,7 @@
 
 </task>
 
+
 <metatask name="gdasenscalcinc">
 
 	<var name="grp">01 02 03 04 05 06 07 08 09 10</var>
@@ -223,9 +221,7 @@
 		<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
 		<envar><name>ENSGRP</name><value>#grp#</value></envar>
 		<dependency>
-			<and>
-				<taskdep task="gdasretrievemet"/>
-			</and>
+			<taskdep task="gdasretrievemet"/>
 		</dependency>
 	</task>
 
@@ -398,15 +394,11 @@
 	<envar><name>CASE_CNTL</name><value>&CASE_CNTL;</value></envar>
 	<envar><name>CASE_ENKF</name><value>&CASE_ENKF;</value></envar>
 	<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
-	<envar><name>AERODA</name><value>&AERODA;</value></envar>
-	<envar><name>ENSRUN</name><value>&ENSRUN;</value></envar>
-	<envar><name>NMEM_ENKF</name><value>&NMEM_ENKF;</value></envar>
 	<envar><name>NMEM_EFCSGRP</name><value>&NMEM_EFCSGRP;</value></envar>
 	<envar><name>PSLOT</name><value>&PSLOT;</value></envar>
 	<envar><name>ROTDIR</name><value>&ROTDIR;</value></envar>
 	<envar><name>RUN_ENVIR</name><value>&RUN_ENVIR;</value></envar>
 	<envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
-	<envar><name>GFSVERSION</name><value>&GFSVERSION;</value></envar>
 	<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
 	<envar><name>NET</name><value>&NET;</value></envar>
 	<envar><name>METRETDIR</name><value>&METRETDIR;</value></envar>
@@ -472,6 +464,9 @@
 			<or>
 				<not><cycleexistdep cycle_offset="-06:00:00"/></not>
 				<metataskdep metatask="gdasenscalcinc"/>
+				<!--
+				<metataskdep metatask="gdasaeroanlrce"/>
+				-->
 			</or>
 		</dependency>
 	</task>
