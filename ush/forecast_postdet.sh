@@ -631,6 +631,7 @@ data_out_GFS() {
       $NCP $DATA/input.nml ${memdir}/
       $NCP $DATA/model_configure ${memdir}/
       $NCP $DATA/nems.configure ${memdir}/
+      $NCP $DATA/AERO_ExtData.rc ${memdir}/
 
       if [ $DOIAU = "YES" ] || [ $DOIAU_coldstart = "YES" ]; then
         # if IAU is on, save restart at start of IAU window

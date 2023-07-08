@@ -114,6 +114,8 @@ if [ -s \${cntlGDAS} ]; then
    
     /bin/cp -r \${cntlGDAS_diag}/* \${cntlBakup_diag}
     /bin/cp -r \${cntlGDAS_diag} \${tmpDiag}/diaggdas.\${cycN}
+
+    /bin/cp -r \${cntlGDAS_atmos}/AERO_ExtData.rc  \${cntlBakup_RST}/
      
     /bin/cp -r \${cntlGDAS_atmos}/RESTART/\${cyc1prefix}.coupler* \${cntlBakup_RST}/
     /bin/cp -r \${cntlGDAS_atmos}/RESTART/\${cyc1prefix}.fv_core* \${cntlBakup_RST}/
