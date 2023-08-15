@@ -65,7 +65,7 @@
 	<!-- Machine related entities -->
 	<!ENTITY PARTITION    "hera">
 	<!ENTITY ACCOUNT    "wrf-chem">
-	<!ENTITY QUEUE      "batch">
+	<!ENTITY QUEUE      "debug">
 	<!ENTITY SCHEDULER  "slurm">
 
 	<!-- ROCOTO parameters that control workflow -->

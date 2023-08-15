@@ -8,7 +8,8 @@ AERO_CONFIG_DIR=$HOMEgfs/parm/chem
 # Path to the input data tree
 case $machine in
   "HERA")
-    AERO_INPUTS_DIR="/scratch1/NCEPDEV/global/glopara/data/gocart_emissions"
+    #AERO_INPUTS_DIR="/scratch1/NCEPDEV/global/glopara/data/gocart_emissions"
+    AERO_INPUTS_DIR="/scratch1/BMC/gsd-fv3-dev/MAPP_2018/bhuang/JEDI-2020/JEDI-FV3/NRTdata_UFS-Aerosols/gocart_emissions"
     ;;
   "ORION")
     AERO_INPUTS_DIR="/work2/noaa/global/wkolczyn/noscrub/global-workflow/gocart_emissions"
